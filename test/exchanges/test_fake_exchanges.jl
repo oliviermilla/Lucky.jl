@@ -1,5 +1,3 @@
-#exchange = Lucky.FakeExchange()
-
 @testset "matching" begin
     # TODO Test matching of limit order by fake exchange
     ohlcsSubject = Subject(Ohlc{DateTime})
@@ -31,4 +29,21 @@
 
     connect(orders)
     connect(ohlcs)
+end
+
+@testset "matching with Limitorder" begin
+    ohlc = rand(Ohlc{DateTime})
+
+    above = LimitOrder(1, ohlc.high + 1)
+    below = LimitOrder(1, ohlc.low - 1)
+    inside = LimitOrder(1, ohlc.open)
+
+    @test isnothing(Lucky.Exchanges.FakeExchanges.match(above, ohlc)) == true
+    @test isnothing(Lucky.Exchanges.FakeExchanges.match(below, ohlc)) == true
+
+    pos = Lucky.Exchanges.FakeExchanges.match(inside, ohlc)
+    @test pos isa FakePosition
+    @test pos.size == 1
+    @test pos.avgPrice == ohlc.open
+    @test pos.createdAt == ohlc.timestamp
 end
