@@ -19,6 +19,7 @@ end
 @inline reset!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade{A}) where {A} = actor.set = false
 
 # Possible TODO: Ohlc on close (versus open) time. Possible first ohlc behavior
+# See https://quant.stackexchange.com/questions/69861/formal-definition-of-open-high-low-close-ohlc-price-data
 function update!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade{A}, trade::DydxV3.Trade) where {A}
     if actor.set
         actor.last = trade.createdAt

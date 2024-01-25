@@ -1,4 +1,4 @@
-@testset "matching" begin
+@testset "matching with MarketOrder" begin
     # TODO Test matching of limit order by fake exchange
     ohlcsSubject = Subject(Ohlc{DateTime})
     ordersSubject = Subject(MarketOrder)
@@ -38,8 +38,8 @@ end
     below = LimitOrder(1, ohlc.low - 1)
     inside = LimitOrder(1, ohlc.open)
 
-    @test isnothing(Lucky.Exchanges.FakeExchanges.match(above, ohlc)) == true
-    @test isnothing(Lucky.Exchanges.FakeExchanges.match(below, ohlc)) == true
+    @test Lucky.Exchanges.FakeExchanges.match(above, ohlc) === nothing
+    @test Lucky.Exchanges.FakeExchanges.match(below, ohlc) === nothing
 
     pos = Lucky.Exchanges.FakeExchanges.match(inside, ohlc)
     @test pos isa FakePosition
