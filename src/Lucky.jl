@@ -1,9 +1,18 @@
 module Lucky
 
+# Domain types
 include("Units.jl")
-using . Units
-export Currency
+using .Units
+export Unit, Currency
+export symbol, currency
 
+include("Instruments.jl")
+using .Instruments
+export Instrument, Cash
+
+include("Positions.jl")
+
+# Constants
 include("Constants.jl")
 using .Constants
 export ORDER_SIDE

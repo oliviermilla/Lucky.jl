@@ -50,8 +50,7 @@ end
 
 match(ord::MarketOrder, ohlc::Ohlc) = FakePosition(ord.size, ohlc.open, ohlc.timestamp)
 function match(ord::LimitOrder, ohlc::Ohlc)
-    body = ohlcpart(ohlc, Ohlcs.body)
-    if ord.limit >= body[1] && ord.limit <= body[2]
+    if ord.limit >= ohlc.low && ord.limit <= ohlc.high
         return FakePosition(ord.size, ord.limit, ohlc.timestamp)
     end
     return nothing

@@ -3,6 +3,9 @@ using Test
 using Lucky
 using Rocket
 
+include("test_currencies.jl")
+include("test_instruments.jl")
+
 include("test_ohlcs.jl")
 include("samplers/test_ohlc_samplers.jl")
 

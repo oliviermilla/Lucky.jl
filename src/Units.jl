@@ -1,14 +1,18 @@
 module Units
 
 export Unit, Currency
+export symbol, currency
 
 abstract type Unit end
 
-struct Currency <: Unit
-    #name::String{24}
-    threeLettersCode::String
-end
+struct Currency{S} <: Unit end
 
-Base.show(io::IO, c::Currency) = print(io, "$(c.threeLettersCode)")
+Currency(S::Symbol) = Currency{S}()
+Currency(S::AbstractString) = Currency{Symbol(S)}()
+
+symbol(::Type{Currency{S}}) where {S} = S
+currency(::Type{C}) where {C<:Currency} = C
+
+Base.show(io::IO, c::Currency{S}) where {S} = print(io, "$(S)")
 
 end
