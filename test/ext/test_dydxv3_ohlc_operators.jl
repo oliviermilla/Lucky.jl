@@ -44,7 +44,7 @@ Rocket.on_complete!(actor::OhlcOperatorTestActor) = testComplete(actor)
 
 @testset "cutoff == true" begin
     trades = rand(DydxV3.Trade, Second(1), 120) # Generate sufficient data for 1 minute + cutoff = 2 mins
-    obs = from(trades) |> ohlc(Minute(1), true)
+    obs = Rocket.from(trades) |> ohlc(Minute(1), true)
 
     testActor = OhlcOperatorTestActor(trades)
     # println("0 - $(length(trades)) trades : $(trades[begin].createdAt) - $(trades[end].createdAt)")

@@ -10,7 +10,7 @@ using Dates
 # Operator
 ohlc(period::Dates.Period, cutoff::Bool=true, seedTime::Union{Nothing,DateTime}=nothing, seedPrice::Union{Nothing,DateTime}=nothing) = OhlcOperatorFromTrade(seedTime, seedTime, period, seedPrice, seedPrice, seedPrice, seedPrice, cutoff, false)
 
-mutable struct OhlcOperatorFromTrade <: LeftTypedOperator{Any}
+struct OhlcOperatorFromTrade <: InferableOperator
     first::Union{Nothing,DateTime}
     last::Union{Nothing,DateTime}
     period::Dates.Period
@@ -25,11 +25,11 @@ end
 Rocket.operator_right(::OhlcOperatorFromTrade, ::Type{L}) where {L} = Ohlc
 
 function Rocket.on_call!(::Type{L}, ::Type{R}, operator::OhlcOperatorFromTrade, source) where {L,R}
-    return proxy(R, source, OhlcSourceProxy(operator.first, operator.last, operator.period, operator.open, operator.high, operator.low, operator.close, operator.cutoff, operator.set))
+    return proxy(R, source, OhlcSourceProxy{L}(operator.first, operator.last, operator.period, operator.open, operator.high, operator.low, operator.close, operator.cutoff, operator.set))
 end
 
 # Proxy
-mutable struct OhlcSourceProxy <: ActorProxy
+struct OhlcSourceProxy{LeftType} <: ActorProxy
     first::Union{Nothing,DateTime}
     last::Union{Nothing,DateTime}
     period::Dates.Period
@@ -41,12 +41,12 @@ mutable struct OhlcSourceProxy <: ActorProxy
     set::Bool
 end
 
-function Rocket.actor_proxy!(::Type{Ohlc}, proxy::OhlcSourceProxy, actor::A) where {A}
-    return OhlcObservableFromTrade{A}(proxy.first, proxy.last, proxy.period, proxy.open, proxy.high, proxy.low, proxy.close, proxy.cutoff, proxy.set, actor)
+function Rocket.actor_proxy!(::Type{Ohlc}, proxy::OhlcSourceProxy{LeftType}, actor::A) where {A, LeftType}
+    return OhlcObservableFromTrade{A, LeftType}(proxy.first, proxy.last, proxy.period, proxy.open, proxy.high, proxy.low, proxy.close, proxy.cutoff, proxy.set, actor)
 end
 
 # Observable
-mutable struct OhlcObservableFromTrade{A} <: Actor{Any} where {A}
+mutable struct OhlcObservableFromTrade{Actor, LeftType} <: Actor{LeftType} where {Actor}
     first::Union{Nothing,DateTime}
     last::Union{Nothing,DateTime}
     period::Dates.Period
@@ -56,7 +56,7 @@ mutable struct OhlcObservableFromTrade{A} <: Actor{Any} where {A}
     close::Union{Nothing,Float64}
     cutoff::Bool
     set::Bool
-    next::A
+    next::Actor
 end
 
 Rocket.on_error!(actor::OhlcObservableFromTrade, error) = error!(actor.next, error)

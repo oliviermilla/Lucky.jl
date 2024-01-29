@@ -9,16 +9,18 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
 
 [weakdeps]
+DydxV3 = "81fc79e4-7aed-40c1-9951-444e465e3245"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [extensions]
+DydxV3Ext = "DydxV3"
 TimeSeriesExt = "TimeSeries"
-
-[extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 julia = "1.9"
 
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [targets]
-test = ["Test", "TimeSeries"]
+test = ["Test", "TimeSeries", "DydxV3"]
