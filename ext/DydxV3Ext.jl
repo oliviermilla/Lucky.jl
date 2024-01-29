@@ -27,14 +27,14 @@ function update!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade, trade::Dydx
     if actor.set
         actor.last = trade.createdAt
         actor.close = trade.price
-    
+
         if trade.price > actor.high
             actor.high = trade.price
         elseif trade.price < actor.low
             actor.low = trade.price
         end
     else
-        set!(actor, trade)        
+        set!(actor, trade)
     end
 
     if (actor.cutoff && second(trade.createdAt) == 59) || trade.createdAt - actor.first == 60 # Is this always reliable ?
