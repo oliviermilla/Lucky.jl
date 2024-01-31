@@ -1,6 +1,4 @@
-using Dates
-
-@testset "rand()" begin
+@testset "Ohlc sampler" begin
     period = Minute(2)
     ohlcs = rand(Ohlc{DateTime}, period, 3)
 

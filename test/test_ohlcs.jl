@@ -1,7 +1,5 @@
 using Lucky.Ohlcs
 
-using Dates
-
 ohlcbase = Ohlc(14.2, 14.4, 14.1, 14.3, Date(2021, 1, 15))
 
 @testset "Ohlc Parts" begin

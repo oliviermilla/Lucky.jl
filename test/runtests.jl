@@ -3,6 +3,9 @@ using Test
 using Lucky
 using Rocket
 
+using Dates
+using Random
+
 include("test_currencies.jl")
 # include("test_instruments.jl")
 # include("test_positions.jl")
