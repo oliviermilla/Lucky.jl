@@ -11,4 +11,4 @@ Currency(S::AbstractString) = Currency{Symbol(S)}()
 symbol(::Type{Currency{S}}) where {S} = S
 currency(::Type{C}) where {C<:Currency} = C
 
-Base.show(io::IO, c::Currency{S}) where {S} = print(io, "$(S)")
+Base.show(io::IO, ::Type{Currency{S}}) where {S} = print(io, "$(S)")

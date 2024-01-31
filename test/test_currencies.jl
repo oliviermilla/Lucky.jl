@@ -9,5 +9,9 @@
         type = Currency{sym}
         @test symbol(type) == sym
         @test currency(type) == type
-    end
+
+        io = IOBuffer()
+        Base.show(io, type)
+        @test String(take!(io)) == "USD"
+    end    
 end
