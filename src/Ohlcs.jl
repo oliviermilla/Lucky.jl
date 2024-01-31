@@ -9,7 +9,6 @@ export gap, ohlcpart, timetype
 
 using Rocket
 using Dates
-using Random
 
 struct Ohlc{T<:Dates.AbstractTime}
     open::Float64

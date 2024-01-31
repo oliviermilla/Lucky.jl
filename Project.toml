@@ -5,15 +5,16 @@ version = "0.1.4"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
 
 [weakdeps]
 DydxV3 = "81fc79e4-7aed-40c1-9951-444e465e3245"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [extensions]
 DydxV3Ext = "DydxV3"
+RandomExt = "Random"
 TimeSeriesExt = "TimeSeries"
 
 [compat]
@@ -24,4 +25,4 @@ Rocket = "1.7.2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "TimeSeries", "DydxV3"]
+test = ["Test", "TimeSeries", "DydxV3", "Random"]
