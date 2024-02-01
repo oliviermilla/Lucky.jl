@@ -1,31 +1,34 @@
 module Lucky
 
-# Domain types
+# ==== Constants
+include("Constants.jl")
+using .Constants
+export ORDER_SIDE
+
+# ==== Financial types
 include("Units.jl")
 using .Units
 export Unit, Currency
 export symbol, currency
 
-include("Instruments.jl")
-using .Instruments
-export Instrument, Cash
-
-include("Positions.jl")
-using .Positions
-export Position
-
-# Constants
-include("Constants.jl")
-using .Constants
-export ORDER_SIDE
-
 include("Ohlcs.jl")
-include("operators/OhlcOperators.jl")
-
 using .Ohlcs
 export Ohlc
 
-# Rocket Stuffs
+include("Instruments.jl")
+using .Instruments
+export Instrument, Cash, Stock
+
+include("Quotes.jl")
+using .Quotes
+export Quote
+
+# include("Positions.jl")
+# using .Positions
+# export Position
+
+# ==== Rocket Stuffs
+include("operators/OhlcOperators.jl")
 using .OhlcOperators
 export ohlc
 

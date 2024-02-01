@@ -1,7 +1,7 @@
 name = "Lucky"
 uuid = "091b6c57-2055-4743-a613-81d9bc5174d5"
 authors = ["Olivier Milla <olivier.milla@hey.com>"]
-version = "0.1.4"
+version = "0.2.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"

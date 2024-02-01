@@ -7,7 +7,8 @@ using Dates
 using Random
 
 include("test_currencies.jl")
-# include("test_instruments.jl")
+include("test_instruments.jl")
+include("test_quotes.jl")
 # include("test_positions.jl")
 
 include("test_ohlcs.jl")
