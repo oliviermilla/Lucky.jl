@@ -1,6 +1,7 @@
 module Instruments
 
 export Instrument
+export instrument
 
 import Lucky.Units as Units
 

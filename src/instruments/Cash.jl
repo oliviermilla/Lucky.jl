@@ -7,4 +7,5 @@ struct Cash{C} <: Instrument end
 @inline Cash(s::String) = Cash(Symbol(s))
 
 import Lucky.Units as Units
-Units.currency(::Cash{C}) where {C<:Units.Currency} = C
+Units.currency(s::Cash{C}) where {C} = C
+Units.currency(::Type{Cash{C}}) where {C} = C
