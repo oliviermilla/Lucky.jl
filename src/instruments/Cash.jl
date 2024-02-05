@@ -8,3 +8,4 @@ struct Cash{C} <: Instrument end
 
 import Lucky.Units as Units
 Units.currency(::Cash{C}) where {C<:Units.Currency} = C
+Units.currency(::Type{Cash{C}}) where {C<:Units.Currency} = C

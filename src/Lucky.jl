@@ -18,14 +18,15 @@ export Ohlc
 include("Instruments.jl")
 using .Instruments
 export Instrument, Cash, Stock
+export instrument
 
 include("Quotes.jl")
 using .Quotes
 export Quote
 
-# include("Positions.jl")
-# using .Positions
-# export Position
+include("Positions.jl")
+using .Positions
+export Position
 
 # ==== Rocket Stuffs
 include("operators/OhlcOperators.jl")

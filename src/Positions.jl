@@ -2,10 +2,14 @@ module Positions
 
 export Position
 
-using Lucky.Instruments
+import Lucky.Instruments as Instruments
+import Lucky.Units as Units
 
-struct Position{I<:Instrument}
-    a::Float32
+struct Position{I<:Instruments.Instrument}
+    instrument::I
+    amount::Float64
 end
+
+Units.currency(::Position{I}) where {I<:Instruments.Instrument} = Units.currency(I)
 
 end
