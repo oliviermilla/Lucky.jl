@@ -4,6 +4,7 @@ export InMemoryBlotter
 
 using Lucky.Blotters
 using Lucky.Fills
+using Lucky.Positions
 
 using Rocket
 
@@ -15,8 +16,8 @@ end
 
 function Rocket.on_next!(actor::InMemoryBlotter, fill::Fill)
     push!(actor.fills, fill)
-    aggSize = mapreduce(x -> x.instrument == fill.instrument ? fill.size : zero(Float64), +, actor.fills)
-    position = Position(fill.instrument, aggSize)
+    aggSize = mapreduce(x -> x.order.instrument == fill.order.instrument ? fill.size : zero(Float64), +, actor.fills)
+    position = Position(fill.order.instrument, aggSize)
     next!(actor.next, position)
 end
 

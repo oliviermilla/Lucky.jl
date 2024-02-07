@@ -43,6 +43,8 @@ export ohlc
 
 include("Blotters.jl")
 using .Blotters
+export AbstractBlotter
+export InMemoryBlotter
 
 include("Strategies.jl")
 using .Strategies

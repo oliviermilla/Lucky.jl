@@ -17,6 +17,7 @@ include("test_ohlcs.jl")
 include("samplers/test_ohlc_samplers.jl")
 
 include("exchanges/test_fake_exchanges.jl")
+include("blotters/test_inmemoryblotters.jl")
 
 # Extensions
 include("ext/test_timeseries.jl")
