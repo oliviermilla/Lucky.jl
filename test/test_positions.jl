@@ -3,7 +3,7 @@
     i = Cash(:USD)
     p = Position(i, v)
     @testset "Constructors" begin
-        @test p.amount == v
+        @test p.size == v
     end
     @testset "Interface" begin
         @test currency(p) == Currency{:USD}
