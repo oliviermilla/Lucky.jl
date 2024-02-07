@@ -44,13 +44,16 @@ function Rocket.on_next!(exchange::FakeExchange, ohlc::Ohlc)
     isnothing(tonext) || foreach(x -> next!(exchange.next, x), tonext)
 end
 
-match(ord::MarketOrder, ohlc::Ohlc) = Fill(fillUUID(), ord, ohlc.open, ord.size, 0.0, ohlc.timestamp)
+match(ord::MarketOrder, ohlc::Ohlc) = Fill(fillUUID(), ord, ohlc.open, ord.size, fee(ord, ohlc.open), ohlc.timestamp)
 function match(ord::LimitOrder, ohlc::Ohlc)
     if ord.limit >= ohlc.low && ord.limit <= ohlc.high
-        return Fill(fillUUID(), ord, ord.limit, ord.size, 0.0, ohlc.timestamp)
+        return Fill(fillUUID(), ord, ord.limit, ord.size, fee(ord, ord.limit), ohlc.timestamp)
     end
     return nothing
 end
 
 fillUUID() = string(uuid5(uuid4(), "FakeExchange"))
+
+fee(ord::AbstractOrder, price::Float64) = 0.0
+
 end
