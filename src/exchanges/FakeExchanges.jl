@@ -4,24 +4,20 @@ export FakeExchange, FakePosition
 
 using Lucky.Constants
 using Lucky.Exchanges
+using Lucky.Fills
 using Lucky.Orders
 using Lucky.Ohlcs
 
 using Rocket
 using Dates
-
-struct FakePosition
-    size::Float64
-    avgPrice::Float64
-    createdAt::DateTime
-end
+using UUIDs
 
 struct FakeExchange <: AbstractExchange
-    pendingOrders::Vector{Any}
+    pendingOrders::Vector{AbstractOrder}
     next::AbstractSubject
 end
 
-@inline FakeExchange(subject::Subject) = FakeExchange(Vector{Any}(), subject)
+@inline FakeExchange(subject::Subject) = FakeExchange(Vector{AbstractOrder}(), subject)
 @inline FakeExchange() = FakeExchange(Subject(FakePosition))
 
 Rocket.on_error!(actor::FakeExchange, error) = error!(actor.next, error)
@@ -40,19 +36,24 @@ function Rocket.on_next!(exchange::FakeExchange, ohlc::Ohlc)
         end
         push!(todel, idx)
         if isnothing(tonext)
-            tonext = Vector{FakePosition}()
+            tonext = Vector{AbstractFill}()
         end
-        push!(tonext, executed)        
+        push!(tonext, executed)
     end
     isnothing(todel) || deleteat!(exchange.pendingOrders, todel)
     isnothing(tonext) || foreach(x -> next!(exchange.next, x), tonext)
 end
 
-match(ord::MarketOrder, ohlc::Ohlc) = FakePosition(ord.size, ohlc.open, ohlc.timestamp)
+match(ord::MarketOrder, ohlc::Ohlc) = Fill(fillUUID(), ord, ohlc.open, ord.size, fee(ord, ohlc.open), ohlc.timestamp)
 function match(ord::LimitOrder, ohlc::Ohlc)
     if ord.limit >= ohlc.low && ord.limit <= ohlc.high
-        return FakePosition(ord.size, ord.limit, ohlc.timestamp)
+        return Fill(fillUUID(), ord, ord.limit, ord.size, fee(ord, ord.limit), ohlc.timestamp)
     end
     return nothing
 end
+
+fillUUID() = string(uuid5(uuid4(), "FakeExchange"))
+
+fee(ord::AbstractOrder, price::Float64) = 0.0
+
 end

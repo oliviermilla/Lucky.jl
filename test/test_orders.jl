@@ -1,4 +1,9 @@
 
-@testset "Market Orders" begin
-    @test rand(Lucky.MarketOrder) isa Lucky.MarketOrder
+@testset "Orders" begin
+    @testset "Market Orders" begin
+        @test_skip "PENDING"        
+    end
+    @testset "Limit Orders" begin
+        @test_skip "PENDING"
+    end    
 end

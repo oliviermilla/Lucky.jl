@@ -1,11 +1,12 @@
 name = "Lucky"
 uuid = "091b6c57-2055-4743-a613-81d9bc5174d5"
 authors = ["Olivier Milla <olivier.milla@hey.com>"]
-version = "0.2.1"
+version = "0.2.3"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
+UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [weakdeps]
 DydxV3 = "81fc79e4-7aed-40c1-9951-444e465e3245"
@@ -18,8 +19,8 @@ RandomExt = "Random"
 TimeSeriesExt = "TimeSeries"
 
 [compat]
-julia = "1.9"
 Rocket = "1.7.2"
+julia = "1.9"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
