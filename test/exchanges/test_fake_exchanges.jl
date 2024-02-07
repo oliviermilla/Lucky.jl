@@ -1,6 +1,5 @@
 @testset "FakeExchange" begin
     @testset "matching with MarketOrder" begin
-        # TODO Test matching of limit order by fake exchange
         ohlcsSubject = Subject(Ohlc{DateTime})
         ordersSubject = Subject(MarketOrder)
 
