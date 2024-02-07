@@ -3,14 +3,17 @@ module Orders
 export AbstractOrder, LimitOrder, MarketOrder
 
 using Lucky.Constants
+using Lucky.Instruments
 
 abstract type AbstractOrder end
 
-struct MarketOrder <: AbstractOrder
+struct MarketOrder{I} <: AbstractOrder
+    instrument::I
     size::Float64
 end
 
-struct LimitOrder <: AbstractOrder
+struct LimitOrder{I} <: AbstractOrder
+    instrument::I
     size::Float64
     limit::Float64
 end

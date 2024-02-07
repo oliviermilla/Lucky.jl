@@ -28,6 +28,14 @@ include("Positions.jl")
 using .Positions
 export Position
 
+include("Orders.jl")
+using .Orders
+export AbstractOrder, LimitOrder, MarketOrder
+
+include("Fills.jl")
+using .Fills
+export AbstractFill, Fill
+
 # ==== Rocket Stuffs
 include("operators/OhlcOperators.jl")
 using .OhlcOperators
@@ -39,10 +47,6 @@ using .Blotters
 include("Strategies.jl")
 using .Strategies
 export AbstractStrategy
-
-include("Orders.jl")
-using .Orders
-export AbstractOrder, LimitOrder, MarketOrder
 
 include("Exchanges.jl")
 using .Exchanges
