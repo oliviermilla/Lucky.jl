@@ -52,4 +52,8 @@ include("Exchanges.jl")
 using .Exchanges
 export AbstractExchange, FakeExchange, FakePosition
 
+include("Performances.jl")
+using .Performances
+export drawdown
+
 end # module Lucky

@@ -21,3 +21,5 @@ include("exchanges/test_fake_exchanges.jl")
 # Extensions
 include("ext/test_timeseries.jl")
 include("ext/test_dydxv3_ohlc_operators.jl")
+
+include("test_performances.jl")
