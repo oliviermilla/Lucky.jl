@@ -6,6 +6,8 @@ using Rocket
 using Dates
 using Random
 
+# Same order as in Lucky.jl
+
 include("test_currencies.jl")
 include("test_instruments.jl")
 include("test_quotes.jl")
@@ -24,3 +26,6 @@ include("ext/test_timeseries.jl")
 include("ext/test_dydxv3_ohlc_operators.jl")
 
 include("test_performances.jl")
+
+# Examples
+include("examples/goldencross.jl")
