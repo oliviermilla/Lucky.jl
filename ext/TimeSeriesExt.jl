@@ -2,14 +2,15 @@ module TimeSeriesExt
 
 using Lucky
 
-using TimeSeries
+import Rocket
+import TimeSeries
 
 Lucky.Ohlc(data::TimeSeries.TimeArray, index::Int) = Ohlc(
-    values(data[index][:Open])[1],
-    values(data[index][:High])[1],
-    values(data[index][:Low])[1],
-    values(data[index][:Close])[1],
-    timestamp(data[index])[1])
+    TimeSeries.values(data[index][:Open])[1],
+    TimeSeries.values(data[index][:High])[1],
+    TimeSeries.values(data[index][:Low])[1],
+    TimeSeries.values(data[index][:Close])[1],
+    TimeSeries.timestamp(data[index])[1])
 
 function Base.Vector{Ohlc}(data::T) where {T<:TimeSeries.TimeArray}
     vec = Vector{Lucky.Ohlc}()
@@ -19,5 +20,7 @@ function Base.Vector{Ohlc}(data::T) where {T<:TimeSeries.TimeArray}
     end
     return vec
 end
+
+Rocket.from(data::TimeSeries.TimeArray) = Rocket.from(Vector{Ohlc}(data))
 
 end
