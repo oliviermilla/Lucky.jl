@@ -36,23 +36,26 @@ include("Fills.jl")
 using .Fills
 export AbstractFill, Fill
 
-# ==== Rocket Stuffs
-include("operators/OhlcOperators.jl")
-using .OhlcOperators
-export ohlc
+# ==== Rocket Dependant
+
+include("Exchanges.jl")
+using .Exchanges
+export AbstractExchange, FakeExchange, FakePosition
 
 include("Blotters.jl")
 using .Blotters
 export AbstractBlotter
 export InMemoryBlotter
 
+include("operators/OhlcOperators.jl")
+using .OhlcOperators
+export ohlc
+
 include("Strategies.jl")
 using .Strategies
 export AbstractStrategy
 
-include("Exchanges.jl")
-using .Exchanges
-export AbstractExchange, FakeExchange, FakePosition
+# === Others
 
 include("Performances.jl")
 using .Performances
