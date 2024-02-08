@@ -10,11 +10,13 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [weakdeps]
 DydxV3 = "81fc79e4-7aed-40c1-9951-444e465e3245"
+MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [extensions]
 DydxV3Ext = "DydxV3"
+MarketDataExt = "MarketData"
 RandomExt = "Random"
 TimeSeriesExt = "TimeSeries"
 
@@ -26,4 +28,4 @@ julia = "1.9"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "TimeSeries", "DydxV3", "Random"]
+test = ["Test", "DydxV3", "MarketData", "Random", "TimeSeries"]
