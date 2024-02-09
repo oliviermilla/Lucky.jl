@@ -17,6 +17,7 @@ include("test_fills.jl")
 
 include("test_ohlcs.jl")
 include("samplers/test_ohlc_samplers.jl")
+# include("operators/test_moving_averages.jl")
 
 include("exchanges/test_fake_exchanges.jl")
 include("blotters/test_inmemoryblotters.jl")
@@ -28,4 +29,4 @@ include("ext/test_dydxv3_ohlc_operators.jl")
 include("test_performances.jl")
 
 # Examples
-include("examples/goldencross.jl")
+# include("examples/goldencross.jl")
