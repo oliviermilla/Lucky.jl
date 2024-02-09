@@ -1,4 +1,4 @@
-using TimeSeries
+import TimeSeries # Import to not interfer with Lucky.timestamp()
 
 @testset "TimeSeries" begin
     timearray = TimeSeries.readtimearray("./ext/AAPL.csv")
