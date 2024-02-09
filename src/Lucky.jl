@@ -22,7 +22,8 @@ export instrument
 
 include("Quotes.jl")
 using .Quotes
-export Quote
+export AbstractQuote, Quote
+export timestamp
 
 include("Positions.jl")
 using .Positions
@@ -50,6 +51,10 @@ export InMemoryBlotter
 include("operators/OhlcOperators.jl")
 using .OhlcOperators
 export ohlc
+
+# include("operators/MovingAverages.jl")
+# using .MovingAverages
+# export sma
 
 include("Strategies.jl")
 using .Strategies

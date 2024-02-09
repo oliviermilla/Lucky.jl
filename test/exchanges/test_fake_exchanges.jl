@@ -1,18 +1,20 @@
 @testset "FakeExchange" begin
     @testset "matching with MarketOrder" begin
-        ohlcsSubject = Subject(Ohlc{DateTime})
-        ordersSubject = Subject(MarketOrder)
+        quotesSubject = Subject(AbstractQuote)
+        ordersSubject = Subject(AbstractOrder)
 
+        instr = Cash(:USD)
         ohlc = rand(Ohlc{DateTime})
-        ohlcs = Rocket.of(ohlc) |> multicast(ohlcsSubject)
+        qte = Quote(instr, ohlc)
+        qtes = Rocket.of(qte) |> multicast(quotesSubject)
 
-        order = MarketOrder(Cash(:USD), rand(-10:0.1:10))
+        order = MarketOrder(instr, rand(-10:0.1:10))
         orders = Rocket.of(order) |> multicast(ordersSubject)
 
         fills = Subject(Lucky.Fill)
         exchange = FakeExchange(fills)
 
-        subscribe!(ohlcsSubject, exchange)
+        subscribe!(quotesSubject, exchange)
         subscribe!(ordersSubject, exchange)
 
         function testNextMarketOrder(pos::Fill)
@@ -30,10 +32,10 @@
         subscribe!(fills, testActor)
 
         connect(orders)
-        connect(ohlcs)
+        connect(qtes)
     end
 
-    @testset "matching with Limit Order" begin
+    @testset "matching with LimitOrder" begin
         ohlc = rand(Ohlc{DateTime})
 
         instr = Cash(:USD)
@@ -54,4 +56,7 @@
         @test pos.fee == 0
         @test pos.createdAt == ohlc.timestamp
     end
+
+    # TODO Test LimitOrder signs
+    # TODO Test instrument matching
 end
