@@ -1,7 +1,7 @@
 # Lucky
 
 [![Build Status](https://github.com/oliviermilla/Lucky.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/oliviermilla/Lucky.jl/actions/workflows/CI.yml?query=branch%3Amain)
-
+[![codecov](https://codecov.io/gh/oliviermilla/Lucky.jl/graph/badge.svg?token=7SAX9EXGHM)](https://codecov.io/gh/oliviermilla/Lucky.jl)
 
 Lucky is a trading framework for Julia.
 
