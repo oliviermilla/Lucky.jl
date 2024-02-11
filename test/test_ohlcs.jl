@@ -14,11 +14,14 @@ end
 
     gapdown = Ohlc(10.5, 13.5, 9.5, 11.6, Date(2021, 1, 16))
     @test gap(gapdown, ohlcbase) == (down, [13.5, 14.1])
+
+    # No gap
+    @test isnothing(gap(ohlcbase, ohlcbase))
 end
 
 @testset "Timetypes" begin
     @test Lucky.timetype(ohlcbase) == Dates.Date
-    vector = Vector{Lucky.Ohlc}()
+    vector = Vector{Lucky.Ohlc{Date}}()
     push!(vector, ohlcbase)
-    @test_broken Lucky.timetype(vector) == Dates.Date
+    @test Lucky.timetype(vector) == Dates.Date
 end
