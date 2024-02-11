@@ -52,9 +52,9 @@ include("operators/OhlcOperators.jl")
 using .OhlcOperators
 export ohlc
 
-# include("operators/MovingAverages.jl")
-# using .MovingAverages
-# export sma
+include("operators/MovingAverages.jl")
+using .MovingAverages
+export sma
 
 include("Strategies.jl")
 using .Strategies
