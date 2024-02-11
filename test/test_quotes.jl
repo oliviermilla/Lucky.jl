@@ -20,7 +20,7 @@
         @testset "Constructors" begin
             @test q isa Lucky.Quotes.OhlcQuote
             @test q.instrument == stock
-            @test q.price == ohlc
+            @test q.ohlc == ohlc
         end
         @testset "Interface" begin
             currency(q) == Currency{:USD}

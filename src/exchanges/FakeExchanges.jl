@@ -43,7 +43,7 @@ function Rocket.on_next!(exchange::FakeExchange, qte::AbstractQuote)
     todel = nothing
     tonext = nothing
     for (idx, order) in enumerate(exchange.pendingOrders[instr])
-        executed = match(order, qte.price, timestamp(qte))
+        executed = match(order, qte)
         isnothing(executed) && continue
         if isnothing(todel)
             todel = Vector{Int}()
@@ -58,17 +58,17 @@ function Rocket.on_next!(exchange::FakeExchange, qte::AbstractQuote)
     isnothing(tonext) || foreach(x -> next!(exchange.next, x), tonext)
 end
 
-@inline match(ord::MarketOrder, price::Number, stamp::D) where{D} = Fill(fillUUID(), ord, price, ord.size, fee(ord, price), stamp)
-function match(ord::LimitOrder, price::Number, stamp::D) where{D}
-    ord.size >= zero(ord.size) && ord.limit >= price && return Fill(fillUUID(), ord, price, ord.size, fee(ord, price), stamp)
-    ord.limit <= price && return Fill(fillUUID(), ord, price, ord.size, fee(ord, price), stamp)
+@inline match(ord::MarketOrder, qte::NumberQuote) = Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
+function match(ord::LimitOrder, qte::NumberQuote)
+    ord.size >= zero(ord.size) && ord.limit >= qte.price && return Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
+    ord.limit <= price && return Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
     return nothing
 end
 
 # OHLC handling
-@inline match(ord::MarketOrder, ohlc::Ohlc, stamp::D) where{D} = match(ord, ohlc.open, stamp)
-function match(ord::LimitOrder, ohlc::Ohlc)
-    ord.limit >= ohlc.low && ord.limit <= ohlc.high && return Fill(fillUUID(), ord, ord.limit, ord.size, fee(ord, ord.limit), ohlc.timestamp)    
+@inline match(ord::MarketOrder, qte::OhlcQuote) = match(ord, Quote(qte.instrument, qte.ohlc.open, timestamp(qte)))
+function match(ord::LimitOrder, qte::OhlcQuote)
+    ord.limit >= qte.ohlc.low && ord.limit <= qte.ohlc.high && return Fill(fillUUID(), ord, ord.limit, ord.size, fee(ord, ord.limit), timestamp(qte))
     return nothing
 end
 

@@ -1,6 +1,6 @@
 module Quotes
 
-export AbstractQuote
+export AbstractQuote, NumberQuote, OhlcQuote
 export Quote
 export currency, timestamp
 
@@ -20,15 +20,15 @@ end
 
 struct OhlcQuote{I} <: AbstractQuote
     instrument::I
-    price::Ohlc
+    ohlc::Ohlc
 end
 
 # Interfaces
 Quote(instrument::Instrument, price::Q, stamp::D) where {Q<:Number,D<:Dates.AbstractTime} = NumberQuote(instrument, price, stamp)
-Quote(instrument::Instrument, price::Q) where {Q<:Ohlc} = OhlcQuote(instrument, price)
+Quote(instrument::Instrument, ohlc::Q) where {Q<:Ohlc} = OhlcQuote(instrument, ohlc)
 
 Units.currency(q::AbstractQuote) = Units.currency(q.instrument)
-timestamp(q::OhlcQuote{I}) where {I} = q.price.timestamp
+timestamp(q::OhlcQuote) = q.ohlc.timestamp
 timestamp(q::NumberQuote) = q.timestamp
 
 end
