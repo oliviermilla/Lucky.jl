@@ -21,6 +21,8 @@
             # Valid ops
             @test q1 + q2 == Quote(stock, price + p2, t2)
             @test q2 - q1 == Quote(stock, p2 - price, t2)
+            @test q2 * 2  == Quote(stock, p2 * 2, t2)
+            @test q2 / 2  == Quote(stock, p2 / 2, t2)
 
             # Ops with missing
             @test q1 + missing === missing
@@ -34,16 +36,36 @@
         end
     end
     @testset "Ohlc" begin
-        ohlc = rand(Ohlc{Date})
-        q = Quote(stock, ohlc)
+        ohlc1 = rand(Ohlc{Date})
+        q1 = Quote(stock, ohlc1)
         @testset "Constructors" begin
-            @test q isa Lucky.Quotes.OhlcQuote
-            @test q.instrument == stock
-            @test q.ohlc == ohlc
+            @test q1 isa Lucky.Quotes.OhlcQuote
+            @test q1.instrument == stock
+            @test q1.ohlc == ohlc1
         end
         @testset "Interface" begin
-            currency(q) == Currency{:USD}
-            timestamp(q) == ohlc.timestamp
+            currency(q1) == Currency{:USD}
+            timestamp(q1) == ohlc1.timestamp
         end
+        @testset "Operators" begin
+            ohlc2 = rand(Ohlc{Date})
+            q2 = Quote(stock, ohlc2)
+
+            # Valid ops
+            @test q1 + q2 == Quote(stock, ohlc1 + ohlc2)
+            @test_throws MethodError q2 - q1
+            @test q2 * 2  == Quote(stock, ohlc2 * 2)
+            @test q2 / 2  == Quote(stock, ohlc2 / 2)
+
+            # Ops with missing
+            @test q1 + missing === missing
+            @test missing - q1 === missing
+
+            # Different instruments
+            cash = Cash(:USD)
+            q3 = Quote(cash, ohlc2)
+            @test_throws MethodError q1 + q3
+            @test_throws MethodError q3 - q1
+        end        
     end
 end
