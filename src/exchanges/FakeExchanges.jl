@@ -58,11 +58,11 @@ function Rocket.on_next!(exchange::FakeExchange, qte::AbstractQuote)
     isnothing(tonext) || foreach(x -> next!(exchange.next, x), tonext)
 end
 
-@inline fillNumberQuote(ord, qte) = Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
-@inline match(ord::MarketOrder, qte::NumberQuote) = fillNumberQuote(ord, qte)
-function match(ord::LimitOrder, qte::NumberQuote)
-    ord.size >= zero(ord.size) && ord.limit >= qte.price && return fillNumberQuote(ord,qte)
-    ord.size <= zero(ord.size) && ord.limit <= qte.price && return fillNumberQuote(ord,qte)
+@inline fillPriceQuote(ord, qte) = Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
+@inline match(ord::MarketOrder, qte::PriceQuote) = fillPriceQuote(ord, qte)
+function match(ord::LimitOrder, qte::PriceQuote)
+    ord.size >= zero(ord.size) && ord.limit >= qte.price && return fillPriceQuote(ord,qte)
+    ord.size <= zero(ord.size) && ord.limit <= qte.price && return fillPriceQuote(ord,qte)
     return nothing
 end
 
