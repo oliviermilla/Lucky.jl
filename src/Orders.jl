@@ -9,12 +9,12 @@ abstract type AbstractOrder end
 
 struct MarketOrder{I} <: AbstractOrder
     instrument::I
-    size::Float64
+    size::Real
 end
 
 struct LimitOrder{I} <: AbstractOrder
     instrument::I
-    size::Float64
+    size::Real
     limit::Float64
 end
 
