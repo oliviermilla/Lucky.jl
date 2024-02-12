@@ -52,6 +52,10 @@ include("operators/OhlcOperators.jl")
 using .OhlcOperators
 export ohlc
 
+include("Indicators.jl")
+using .Indicators
+export AbstractIndicator, SMAIndicator
+
 include("operators/MovingAverages.jl")
 using .MovingAverages
 export sma
