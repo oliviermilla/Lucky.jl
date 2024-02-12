@@ -15,12 +15,14 @@ import MarketData
     opts = MarketData.YahooOpt(period1=periodStart, period2=periodEnd, interval="1d")
     data = MarketData.yahoo(symbol, opts)
 
-    # Create the Instrument
+    # Create the Instruments
+    cash = Cash(:USD)
     stock = Stock(symbol, :USD)
 
     # Create the feeds    
     quotes = Subject(AbstractQuote) #Quotes feed. Subscribe to it to get the quotes.
     orders = Subject(AbstractOrder) # Orders feed. Subscribe to it to get the orders created by our Strategy.
+    fills = Subject(AbstractFill) # Fills feed. Subscribe to it to get the fills of the exchange.
     positions = Subject(Position) # Positions feed. Subscribe to it to get the positions returned by the exchange.
 
     # Iterate the data as if it was a live feed
@@ -31,7 +33,8 @@ import MarketData
     fastSMA = source |> sma(2)
 
     mutable struct SmaStrategy{A} <: AbstractStrategy
-        position::Position
+        cashPosition::Position
+        aaplPosition::Position
         prevSlowSMA::SMAIndicator{Val{5}}
         prevFastSMA::SMAIndicator{Val{2}}
         slowSMA::SMAIndicator{Val{5}}
@@ -39,7 +42,8 @@ import MarketData
         next::A
     end    
 
-    SmaStrategy(actor::A) where {A} = SmaStrategy(
+    SmaStrategy(cashPosition::Position, actor::A) where {A} = SmaStrategy(
+        cashPosition,        
         Position(stock, zero(Float64)),
         SMAIndicator{Val{5}}(missing),
         SMAIndicator{Val{2}}(missing),
@@ -73,7 +77,8 @@ import MarketData
     function trade(strat::SmaStrategy)
         if strat.prevFastSMA < strat.prevSlowSMA
             if strat.fastSMA >= strat.slowSMA
-                # TODO LONG
+                order = MarketOrder(stock, 1)
+                next!(strat.next, order)
                 return
             else
                 # TODO CLOSE ANY LONG
@@ -82,7 +87,7 @@ import MarketData
         end
         if strat.prevFastSMA > strat.prevSlowSMA
             if strat.fastSMA <= strat.slowSMA
-                # TODO SHORT
+                order = MarketOrder(stock, -1)
                 return
             else
                 # TODO CLOSE ANY SHORT
@@ -90,15 +95,15 @@ import MarketData
         end
     end
 
-    strat = SmaStrategy(orders)
+    strat = SmaStrategy(Position(cash, 1000.0), orders)
     subscribe!(slowSMA, strat)
     subscribe!(fastSMA, strat)
-    subscribe!(positions, strat)
+    #subscribe!(positions, strat)
 
-    exchange = FakeExchange(positions)
+    exchange = FakeExchange(fills)
     subscribe!(quotes, exchange)
     subscribe!(orders, exchange)
-    #subscribe!(quotes, logger())
+    subscribe!(orders, logger())
 
     # Connect the source. This will start the feed
     connect(source)

@@ -39,7 +39,7 @@ SmaActor{A,Left,LT}(length::LT, actor::A) where {A,Left,LT} = SmaActor{A,Left,LT
 function Rocket.on_next!(actor::SmaActor, data::T) where {T}
     circshift!(actor.lastN, -1)
     actor.lastN[lastindex(actor.lastN)] = data
-    next!(actor.next, SMAIndicator{Val{length(actor.lastN)}}(Statistics.mean(actor.lastN)))
+    next!(actor.next, SMAIndicator(length(actor.lastN), Statistics.mean(actor.lastN)))
 end
 
 Rocket.on_error!(actor::SmaActor, error) = error!(actor.next, error)

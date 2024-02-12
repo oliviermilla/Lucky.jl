@@ -14,6 +14,7 @@ include("test_quotes.jl")
 include("test_positions.jl")
 include("test_orders.jl")
 include("test_fills.jl")
+include("test_indicators.jl")
 
 include("test_ohlcs.jl")
 include("samplers/test_ohlc_samplers.jl")
