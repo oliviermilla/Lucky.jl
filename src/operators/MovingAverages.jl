@@ -2,9 +2,9 @@ module MovingAverages
 
 export sma
 
-using Statistics
-
+using Lucky.Indicators
 using Rocket
+using Statistics
 
 # Operators
 sma(length::U) where {U<:Unsigned} = SmaOperator{U}(length)
@@ -14,7 +14,7 @@ struct SmaOperator{LT} <: InferableOperator
     length::LT
 end
 
-Rocket.operator_right(::SmaOperator, ::Type{L}) where {L} = Union{Missing,Float64}
+Rocket.operator_right(op::SmaOperator, ::Type{L}) where {L} = SMAIndicator{Val(op.length)}
 
 function Rocket.on_call!(::Type{L}, ::Type{R}, operator::SmaOperator{LT}, source) where {L,R,LT}
     return proxy(R, source, SmaProxy{L,LT}(operator.length))
@@ -39,7 +39,7 @@ SmaActor{A,Left,LT}(length::LT, actor::A) where {A,Left,LT} = SmaActor{A,Left,LT
 function Rocket.on_next!(actor::SmaActor, data::T) where {T}
     circshift!(actor.lastN, -1)
     actor.lastN[lastindex(actor.lastN)] = data
-    next!(actor.next, Statistics.mean(actor.lastN))
+    next!(actor.next, SMAIndicator{Val{length(actor.lastN)}}(Statistics.mean(actor.lastN)))
 end
 
 Rocket.on_error!(actor::SmaActor, error) = error!(actor.next, error)

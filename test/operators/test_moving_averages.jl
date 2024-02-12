@@ -1,21 +1,22 @@
 @testset "Moving Averages" begin
     @testset "Simple Moving Averages" begin        
-        subject = Subject(Union{Missing, Float64})
+        subject = Subject(SMAIndicator)
         source = Rocket.from(1:5) |> sma(3) |> multicast(subject)
 
         counter = Int(0)
-        function testNext(avg::Union{Missing,Float64})
+        function testNext(avg::SMAIndicator)
+            val = avg.value
             counter += 1
             if counter == 1
-                @test ismissing(avg)
+                @test ismissing(val)
             elseif counter == 2
-                @test ismissing(avg)
+                @test ismissing(val)
             elseif counter == 3
-                @test avg == (1+2+3)/3
+                @test val == (1+2+3)/3
             elseif counter == 4
-                @test avg == (2+3+4)/3
+                @test val == (2+3+4)/3
             elseif counter == 5
-                @test avg == (3+4+5)/3
+                @test val == (3+4+5)/3
             end
         end
     
