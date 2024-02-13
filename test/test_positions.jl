@@ -6,6 +6,7 @@
         @test p.size == v
     end
     @testset "Interface" begin
+        @test PositionType(p) === Position{InstrumentType(i), Float64}
         @test currency(p) == Currency{:USD}
     end
 end

@@ -8,7 +8,7 @@ export ORDER_SIDE
 # ==== Financial types
 include("Units.jl")
 using .Units
-export Unit, Currency
+export Unit, UnitType, Currency, CurrencyType
 export symbol, currency
 
 include("Ohlcs.jl")
@@ -17,25 +17,32 @@ export Ohlc
 
 include("Instruments.jl")
 using .Instruments
-export Instrument, Cash, Stock
-export instrument
+export Instrument, InstrumentType
+export Cash, Stock
 
 include("Quotes.jl")
 using .Quotes
-export AbstractQuote, Quote
+export AbstractQuote, Quote, QuoteType
 export timestamp
 
 include("Positions.jl")
 using .Positions
-export Position
+export Position, PositionType
 
 include("Orders.jl")
 using .Orders
-export AbstractOrder, LimitOrder, MarketOrder
+export AbstractOrder, OrderType
+export LimitOrder, MarketOrder
 
 include("Fills.jl")
 using .Fills
-export AbstractFill, Fill
+export AbstractFill, FillType
+export Fill
+
+include("Indicators.jl")
+using .Indicators
+export AbstractIndicator, IndicatorType
+export SMAIndicator
 
 # ==== Rocket Dependant
 
@@ -51,10 +58,6 @@ export InMemoryBlotter
 include("operators/OhlcOperators.jl")
 using .OhlcOperators
 export ohlc
-
-include("Indicators.jl")
-using .Indicators
-export AbstractIndicator, SMAIndicator
 
 include("operators/MovingAverages.jl")
 using .MovingAverages
