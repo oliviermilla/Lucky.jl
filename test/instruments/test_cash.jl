@@ -1,4 +1,3 @@
-
 @testset "Cash" begin
     USD = Currency{:USD}
     @testset "Constructors" begin        

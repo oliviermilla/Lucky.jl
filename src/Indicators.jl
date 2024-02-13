@@ -17,10 +17,12 @@ Base.isless(x::I, y::I) where {I<:AbstractIndicator} = isless(x.value, y.value)
 
 struct SMAIndicator{LT,V} <: AbstractIndicator
     value::V
-    function SMAIndicator(length::Integer, value::T) where {T}
-        length > 0 || error("SMAIndicator: $(length) must be positive to calculate a moving average.")
-        return new{Val(length),Union{Missing,T}}(value)
-    end
+    SMAIndicator{A,V}(value::V) where {A,V} = new{A,Union{Missing,V}}(value)
+end
+
+function SMAIndicator(length::Integer, value::V) where {V}
+    length > 0 || error("SMAIndicator: $(length) must be positive to calculate a moving average.")
+    return SMAIndicator{Val(length),V}(value)
 end
 
 IndicatorType(::Type{SMAIndicator}, length::Integer, Q::Type{<:AbstractQuote}) = SMAIndicator{Val(length),Union{Missing,Q}}

@@ -16,6 +16,10 @@
             indicType = IndicatorType(SMAIndicator, 5, quoteType)
             @test indicType == SMAIndicator{Val(5),Union{Missing,quoteType}}
 
+            indic = indicType(missing)
+            @test indic isa SMAIndicator{Val(5),Union{Missing,quoteType}}
+            @test indic.value === missing
+
             @test_throws ErrorException IndicatorType(AbstractIndicator)
         end
         @testset "Operators" begin

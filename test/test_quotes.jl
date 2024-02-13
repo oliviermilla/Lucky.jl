@@ -35,6 +35,9 @@
             q3 = Quote(cash, p2, t2)
             @test_throws MethodError q1 + q3
             @test_throws MethodError q3 - q1
+
+            # Convert
+            @test convert(Float64, q3) == Float64(p2)
         end
     end
     @testset "Ohlc" begin
@@ -69,6 +72,9 @@
             q3 = Quote(cash, ohlc2)
             @test_throws MethodError q1 + q3
             @test_throws MethodError q3 - q1
+
+            # Convert
+            @test convert(Float64,q3) == Float64(ohlc2.close)
         end
     end
 end

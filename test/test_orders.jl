@@ -10,6 +10,7 @@
             instr = Cash(:USD)
             order = MarketOrder(instr, 13.4)
             @test currency(order) == Currency{:USD}
+            @test currency(OrderType(order)) == Currency{:USD}
         end
     end
     @testset "Limit Orders" begin
@@ -22,6 +23,7 @@
             instr = Cash(:USD)
             order = LimitOrder(instr, 13.4, 1.0889)
             @test currency(order) == Currency{:USD}
+            @test currency(OrderType(order)) == Currency{:USD}
         end
     end    
 end

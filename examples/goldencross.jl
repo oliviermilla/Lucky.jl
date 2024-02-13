@@ -8,10 +8,10 @@ import MarketData
 @testset "Golden Cross" begin
     symbol = :AAPL
 
-    # Use the offline dataset provided with MarketData
+    # Use the offline dataset provided by the MarketData package
     data = MarketData.AAPL
 
-    # Or uncomment to get 3 months of data from yahoo 
+    # Or uncomment these lines to get 3 months of data from yahoo from whatever period
     # today = Dates.now(Dates.UTC)
     # periodEnd = Dates.firstdayofweek(today)
     # periodStart = Dates.lastdayofweek(today - Month(3))
