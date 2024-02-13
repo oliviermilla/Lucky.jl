@@ -1,4 +1,4 @@
-@testset "Moving Averages" begin
+@testset "Moving Averages Operators" begin
     @testset "Simple Moving Averages" begin        
         subject = Subject(SMAIndicator)
         source = Rocket.from(1:5) |> sma(3) |> multicast(subject)

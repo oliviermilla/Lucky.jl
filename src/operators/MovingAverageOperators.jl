@@ -1,4 +1,4 @@
-module MovingAverages
+module MovingAverageOperators
 
 export sma
 
