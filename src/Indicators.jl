@@ -26,6 +26,8 @@ function SMAIndicator(length::Integer, value::V) where {V}
 end
 
 IndicatorType(::Type{SMAIndicator}, length::Integer, Q::Type{<:AbstractQuote}) = SMAIndicator{Val(length),Union{Missing,Q}}
+IndicatorType(::Type{SMAIndicator}, length::Integer, Q::Type{<:Any}) = SMAIndicator{Val(length),Union{Missing,Q}}
+IndicatorType(::Type{SMAIndicator}, length::Integer, Q::Type{<:Integer}) = SMAIndicator{Val(length),Union{Missing,Float64}}
 
 Base.isless(x::SMAIndicator{I}, y::SMAIndicator{J}) where {I,J} = isless(x.value, y.value)
 
