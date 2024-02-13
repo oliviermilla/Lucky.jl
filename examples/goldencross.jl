@@ -14,7 +14,7 @@ import MarketData
 # All blocks are Rocket.jl types and can be mixed up with the operators and other generic 'blocks' the library provides.
 # For instance, you could add a 'network' blotter to the scheme that sends everything it is subscribed to over a network or a database.
 # 
-# This makes Lucky.jl  very powerful to develop, extend and integrate systems incrementally, from what could be a very simple R&D code to production.
+# This makes Lucky.jl  very powerful to develop, extend and integrate systems incrementally, from what could be a very simple R&D code to production. 
 @testset "Golden Cross" begin
     symbol = :AAPL
 
@@ -52,7 +52,7 @@ import MarketData
     SlowIndicatorType = IndicatorType(SMAIndicator, 2, TQuoteType)
     FastIndicatorType = IndicatorType(SMAIndicator, 5, TQuoteType)
 
-    mutable struct SmaStrategy{A} <: AbstractStrategy
+    mutable struct GoldenCross{A} <: AbstractStrategy
         cashPosition::Position
         aaplPosition::Position
         prevSlowSMA::SlowIndicatorType
@@ -62,7 +62,7 @@ import MarketData
         next::A
     end
 
-    SmaStrategy(cashPosition::Position, actor::A) where {A} = SmaStrategy(
+    GoldenCross(cashPosition::Position, actor::A) where {A} = GoldenCross(
         cashPosition,
         Position(stock, zero(Float64)),
         SlowIndicatorType(missing),
@@ -73,7 +73,7 @@ import MarketData
     )
         
     # This is called every time a slow SMAIndicator is received
-    function Rocket.on_next!(strat::SmaStrategy, data::SlowIndicatorType)
+    function Rocket.on_next!(strat::GoldenCross, data::SlowIndicatorType)
         @debug "Received slow SMA: $(data)"
         strat.prevSlowSMA = strat.slowSMA
         strat.slowSMA = data
@@ -81,7 +81,7 @@ import MarketData
     end
 
     # This is called every time a fast SMAIndicator is received
-    function Rocket.on_next!(strat::SmaStrategy, data::FastIndicatorType)
+    function Rocket.on_next!(strat::GoldenCross, data::FastIndicatorType)
         @debug "Received fast SMA: $(data)"
         strat.prevFastSMA = strat.fastSMA
         strat.fastSMA = data
@@ -92,9 +92,9 @@ import MarketData
     #Rocket.on_next!(position::Position) 
 
     # This is called every time one of the subscription finishes its stream
-    Rocket.on_complete!(strat::SmaStrategy) = println("Done!")
+    Rocket.on_complete!(strat::GoldenCross) = println("Done!")
 
-    function trade(strat::SmaStrategy)
+    function trade(strat::GoldenCross)
         if strat.prevFastSMA < strat.prevSlowSMA && strat.fastSMA >= strat.slowSMA
             order = MarketOrder(stock, 1)
             next!(strat.next, order)
@@ -108,7 +108,7 @@ import MarketData
         end
     end
 
-    strat = SmaStrategy(Position(cash, 1000.0), orders)
+    strat = GoldenCross(Position(cash, 1000.0), orders)
     subscribe!(slowSMA, strat)
     subscribe!(fastSMA, strat)
     #subscribe!(positions, strat)
