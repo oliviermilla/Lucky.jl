@@ -7,39 +7,45 @@ using Rocket
 using Statistics
 
 # Operators
-sma(length::U) where {U<:Unsigned} = SmaOperator{U}(length)
-sma(length::S) where {S<:Signed} = sma(convert(unsigned(S), length))
+sma(length::Int64) = SmaOperator(length)
 
-struct SmaOperator{LT} <: InferableOperator
-    length::LT
+rightType(length::Int64, ::Type{L}) where {L} = IndicatorType(SMAIndicator, length, L)
+
+struct SmaOperator <: InferableOperator
+    length::Int64
+    function SmaOperator(length::Int64)
+        length > 0 || error("SmaOperator: $(length) must be positive to calculate a moving average.")
+        return new(length)
+    end
 end
 
-Rocket.operator_right(op::SmaOperator, ::Type{L}) where {L} = SMAIndicator{Val(op.length)}
+Rocket.operator_right(op::SmaOperator, ::Type{L}) where {L} = rightType(op.length, L)
 
-function Rocket.on_call!(::Type{L}, ::Type{R}, operator::SmaOperator{LT}, source) where {L,R,LT}
-    return proxy(R, source, SmaProxy{L,LT}(operator.length))
+function Rocket.on_call!(::Type{L}, ::Type{R}, operator::SmaOperator, source) where {L,R}
+    return proxy(R, source, SmaProxy(L, operator.length))
 end
 
 # Proxy
-struct SmaProxy{L,LT} <: ActorProxy
-    length::LT
+struct SmaProxy <: ActorProxy
+    leftType::Type
+    length::Int64
 end
 
-function Rocket.actor_proxy!(::Type{Right}, proxy::SmaProxy{Left,LT}, actor::A) where {Left,Right,A,LT}
-    return SmaActor{A,Left,LT}(proxy.length, actor)
+function Rocket.actor_proxy!(::Type{R}, proxy::SmaProxy, actor::A) where {R,A}
+    return SmaActor{A,proxy.leftType}(proxy.length, actor)
 end
 
 # Observable
-mutable struct SmaActor{A,Left,LT} <: Actor{Left}
-    lastN::Vector{Union{Missing,Left}}
-    initCounter::LT
+struct SmaActor{A,L} <: Actor{L}
+    length::Int64
+    lastN::Vector{Union{Missing,L}}
     next::A
 end
-SmaActor{A,Left,LT}(length::LT, actor::A) where {A,Left,LT} = SmaActor{A,Left,LT}(Vector{Union{Missing,Left}}(missing, length), LT(0), actor)
-function Rocket.on_next!(actor::SmaActor, data::T) where {T}
+SmaActor{A,L}(length::Int64, actor::A) where {A,L} = SmaActor{A,L}(length, Vector{Union{Missing,L}}(missing, length), actor)
+function Rocket.on_next!(actor::SmaActor, data::L) where {L}
     circshift!(actor.lastN, -1)
     actor.lastN[lastindex(actor.lastN)] = data
-    next!(actor.next, SMAIndicator(length(actor.lastN), Statistics.mean(actor.lastN)))
+    next!(actor.next, rightType(actor.length, L)(Statistics.mean(actor.lastN)))
 end
 
 Rocket.on_error!(actor::SmaActor, error) = error!(actor.next, error)
