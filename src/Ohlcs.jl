@@ -42,13 +42,14 @@ end
 end
 
 # Operators
-import Base: +, -, *, /, convert
+import Base: +, -, *, /, convert, isless
 +(x::I, y::I) where {I<:Ohlc} = I(x.open, max(x.high, y.high), min(x.low, y.low), y.close, max(x.timestamp, y.timestamp))
 #-(x::I, y::I) where {I<:Ohlc} = I(x.ohlc - y.ohlc)
 *(x::I, y::N) where {I<:Ohlc,N<:Number} = I(x.open * y, x.high * y, x.low * y, x.close * y, x.timestamp)
 /(x::I, y::N) where {I<:Ohlc,N<:Number} = I(x.open / y, x.high / y, x.low / y, x.close / y, x.timestamp)
 # Convert on close
 convert(T::Type{<:Number}, x::Ohlc) = convert(T, x.close)
+isless(x::I, y::I) where {I<:Ohlc} = isless(x.close, y.close)
 
 # Rocket stuffs
 Rocket.scalarness(::Type{<:Ohlc{T}}) where {T} = Rocket.Scalar()
