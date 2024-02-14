@@ -36,6 +36,9 @@ import MarketData
     TStockType = InstrumentType(stock)
     TQuoteType = QuoteType(TStockType, Ohlc{Date})
 
+    CashPositionType = PositionType(cash, Float64, Date)
+    StockPositionType = PositionType(stock, Int64, TQuoteType)
+
     # Create the feeds where each block submits or reads new data (pub/sub)   
     quotes = Subject(TQuoteType) #Quotes feed. Subscribe to it to get the quotes.
     orders = Subject(AbstractOrder) # Orders feed. Subscribe to it to get the orders created by our Strategy.
@@ -48,14 +51,14 @@ import MarketData
     source = Rocket.from(data) |> map(TQuoteType, ohlc -> Quote(stock, ohlc)) |> multicast(quotes)
     slowSMA = source |> sma(5)
     fastSMA = source |> sma(2)
-    
+
     SlowIndicatorType = IndicatorType(SMAIndicator, 2, TQuoteType)
     FastIndicatorType = IndicatorType(SMAIndicator, 5, TQuoteType)
 
     # Write the strategy
     mutable struct GoldenCross{A} <: AbstractStrategy
-        cashPosition::Union{Nothing, Position}
-        aaplPosition::Union{Nothing, Position}
+        cashPosition::Union{Nothing,CashPositionType}
+        aaplPosition::Union{Nothing,StockPositionType}
         prevSlowSMA::SlowIndicatorType
         prevFastSMA::FastIndicatorType
         slowSMA::SlowIndicatorType
@@ -72,7 +75,7 @@ import MarketData
         FastIndicatorType(missing),
         actor
     )
-        
+
     # This is called every time a slow SMAIndicator is received
     function Rocket.on_next!(strat::GoldenCross, data::SlowIndicatorType)
         @debug "Received slow SMA: $(data)"
@@ -86,14 +89,25 @@ import MarketData
         @debug "Received fast SMA: $(data)"
         strat.prevFastSMA = strat.fastSMA
         strat.fastSMA = data
+        # trade(strat) Current strategy does not depend on position
+    end
+
+    # This is called every time a new effective cash position is received
+    function Rocket.on_next!(strat::GoldenCross, position::CashPositionType)
+        println("Received cash position: $(position)")
+        strat.cashPosition = position
+        # trade(strat) Current strategy does not depend on position
+    end
+
+    # This is called every time a new effective AAPL position is received
+    function Rocket.on_next!(strat::GoldenCross, position::StockPositionType)
+        println("Received stock position: $(position)")
+        strat.aaplPosition = position
         trade(strat)
     end
 
-    # This is called every time a new effective position is received
-    #Rocket.on_next!(position::Position) 
-
     # This is called every time one of the subscription finishes its stream
-    Rocket.on_complete!(strat::GoldenCross) = println("Done!")
+    Rocket.on_complete!(::GoldenCross) = println("Done!")
 
     function trade(strat::GoldenCross)
         if strat.prevFastSMA < strat.prevSlowSMA && strat.fastSMA >= strat.slowSMA
@@ -111,20 +125,20 @@ import MarketData
 
     # Get the initial positions from the quotes feed
     # In prod you'll get that from the real feed from your broker account
-    subscribe!(quotes |> first() |> map(q -> Position(cash, 1000.0, timestamp(q))), positions)
-    subscribe!(quotes |> first() |> map(q -> Position(stock, zero(Float64), timestamp(q))), positions)
+    subscribe!(quotes |> first() |> map(CashPositionType, q -> CashPositionType(cash, 1000.0, timestamp(q))), positions)
+    subscribe!(quotes |> first() |> map(StockPositionType, q -> StockPositionType(stock, zero(Float64), timestamp(q))), positions)
 
     # Create a 'strategy' block and subscribe to the feed it needs
     strat = GoldenCross(orders)
     subscribe!(slowSMA, strat)
     subscribe!(fastSMA, strat)
-    #subscribe!(positions, strat)
+    subscribe!(positions, strat)
 
     # Create an 'exchange' block (replace with a true exchange in prod)
     # and subscribe to the feeds it needs
     exchange = FakeExchange(fills)
     subscribe!(quotes, exchange)
-    subscribe!(orders, exchange)    
+    subscribe!(orders, exchange)
 
     # Create a 'blotter' block that will reside in memory
     # Subscribe to the feeds it needs (Fills)

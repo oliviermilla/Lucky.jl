@@ -17,7 +17,7 @@ struct Position{I<:Instrument,S<:Real,D} <: AbstractPosition
     timestamp::D
 end
 
-PositionType(instrument::Instrument, S::Type{<:Real}, Q::Type{<:AbstractQuote}) = Position{InstrumentType(instrument),S,TimestampType(Q)}
+PositionType(instrument::Instrument, S::Type{<:Real}, Q::Type{<:Any}) = Position{InstrumentType(instrument),S,Units.TimestampType(Q)}
 Units.TimestampType(::Position{I,S,D}) where {I,S,D} = D
 Units.currency(::Position{I,S}) where {I<:Instrument,S} = Units.currency(I)
 
