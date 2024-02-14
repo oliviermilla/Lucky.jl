@@ -4,8 +4,9 @@ export Ohlc
 
 export OHLC_PART, body, top, bottom
 export GAP, up, down
+export gap, ohlcpart
 
-export gap, ohlcpart, timetype
+import Lucky.Units as Units
 
 using Rocket
 using Dates
@@ -20,8 +21,8 @@ end
 
 Base.show(io::IO, ohlc::Ohlc{T}) where {T<:Dates.AbstractTime} = show(io, "Ohlc @ $(ohlc.timestamp): O:$(ohlc.open) H:$(ohlc.high) L:$(ohlc.low) C:$(ohlc.close)")
 
-timetype(::Ohlc{T}) where {T} = T
-timetype(::Vector{Ohlc{T}}) where {T} = T
+Units.TimestampType(::Type{Ohlc{T}}) where {T} = T
+Units.TimestampType(o::Ohlc{T}) where {T} = T
 
 @enum OHLC_PART body top bottom
 @inline function ohlcpart(ohlc::Ohlc, ::Val{body})

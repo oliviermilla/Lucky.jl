@@ -8,7 +8,7 @@ export ORDER_SIDE
 # ==== Financial types
 include("Units.jl")
 using .Units
-export Unit, UnitType, Currency, CurrencyType
+export Unit, UnitType, Currency, CurrencyType, TimestampType
 export symbol, currency
 
 include("Ohlcs.jl")

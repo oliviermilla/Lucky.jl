@@ -13,8 +13,9 @@ using Dates
 
 abstract type AbstractQuote end
 
-QuoteType(I::Type{<:Instrument}, params...) = error("You probably forget to implement QuoteType(::$(I), $(params...))")
+QuoteType(I::Type{<:Instrument}, params...) = error("You probably forgot to implement QuoteType(::$(I), $(params...))")
 QuoteType(Q::Type{<:AbstractQuote}) = Q
+TimestampType(Q::Type{<:AbstractQuote}) = error("You probably forgot to implement TimestampType(::$(Q))")
 
 struct PriceQuote{I,Q,D} <: AbstractQuote
     instrument::I
@@ -32,13 +33,16 @@ Quote(instrument::Instrument, price::Q, stamp::D) where {Q<:Number,D<:Dates.Abst
 Quote(instrument::Instrument, ohlc::Q) where {Q<:Ohlc} = OhlcQuote(instrument, ohlc)
 
 QuoteType(I::Type{<:Instrument}, Q::Type{<:Ohlc}) = OhlcQuote{I,Q}
-QuoteType(I::Type{<:Instrument}, P::Type{<:Number}=Float64, D::Type{<:TimeType}=DateTime) = PriceQuote{I,P,D}
+QuoteType(I::Type{<:Instrument}, P::Type{<:Number}=Float64, D::Type{<:Dates.AbstractTime}=Dates.DateTime) = PriceQuote{I,P,D}
 QuoteType(i::Instrument, Q::Type{<:Ohlc}) = QuoteType(InstrumentType(i), Q)
-QuoteType(i::Instrument, P::Type{<:Number}=Float64, D::Type{<:TimeType}=DateTime) = QuoteType(InstrumentType(i), P, D)
+QuoteType(i::Instrument, P::Type{<:Number}=Float64, D::Type{<:Dates.AbstractTime}=DateTime) = QuoteType(InstrumentType(i), P, D)
 
 Units.currency(q::AbstractQuote) = Units.currency(q.instrument)
 timestamp(q::OhlcQuote) = q.ohlc.timestamp
 timestamp(q::PriceQuote) = q.timestamp
+
+#Units.TimestampType(::Type{<:OhlcQuote{I,O}}) where {I,O} = TimestampType(O)
+#Units.TimestampType(::Type{<:PriceQuote{I,P,D}}) where {I,P,D} = D
 
 import Base: +, -, *, /, convert, isless
 # https://github.com/JuliaLang/julia/blob/0a8916446b782eae1a09681b2b47c1be26fab7f3/base/missing.jl#L119

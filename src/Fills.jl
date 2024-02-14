@@ -18,7 +18,7 @@ struct Fill{O,S,D} <: AbstractFill
     price::Float64
     size::S
     fee::Float64
-    createdAt::D
+    timestamp::D
 end
 
 Units.currency(::Fill{O,S,D}) where {O<:AbstractOrder,S,D} = Units.currency(O)

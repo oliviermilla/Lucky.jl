@@ -2,18 +2,23 @@ module Positions
 
 export Position, PositionType
 
-import Lucky.Instruments as Instruments
+#import Lucky.Instruments as Instruments
+using Lucky.Instruments
+using Lucky.Quotes
 import Lucky.Units as Units
 
 abstract type AbstractPosition end
 
-PositionType(::P) where{P<:AbstractPosition} = P
+PositionType(::P) where {P<:AbstractPosition} = P
 
-struct Position{I<:Instruments.Instrument,S<:Real} <: AbstractPosition
+struct Position{I<:Instrument,S<:Real,D} <: AbstractPosition
     instrument::I
     size::S
+    timestamp::D
 end
 
-Units.currency(::Position{I,S}) where {I<:Instruments.Instrument,S} = Units.currency(I)
+PositionType(instrument::Instrument, S::Type{<:Real}, Q::Type{<:AbstractQuote}) = Position{InstrumentType(instrument),S,TimestampType(Q)}
+Units.TimestampType(::Position{I,S,D}) where {I,S,D} = D
+Units.currency(::Position{I,S}) where {I<:Instrument,S} = Units.currency(I)
 
 end

@@ -36,25 +36,26 @@ import MarketData
     TStockType = InstrumentType(stock)
     TQuoteType = QuoteType(TStockType, Ohlc{Date})
 
-    # Create the feeds    
+    # Create the feeds where each block submits or reads new data (pub/sub)   
     quotes = Subject(TQuoteType) #Quotes feed. Subscribe to it to get the quotes.
     orders = Subject(AbstractOrder) # Orders feed. Subscribe to it to get the orders created by our Strategy.
     fills = Subject(AbstractFill) # Fills feed. Subscribe to it to get the fills of the exchange.
     positions = Subject(Position) # Positions feed. Subscribe to it to get the positions returned by the exchange.
 
-    # Iterate the data as if it was a live feed
+    # Iterate the data (or a live feed)
     # Map the data to quotes of the above stock instrument
     # Multicast to the quotes feed so any actor can subscribe.    
     source = Rocket.from(data) |> map(TQuoteType, ohlc -> Quote(stock, ohlc)) |> multicast(quotes)
     slowSMA = source |> sma(5)
     fastSMA = source |> sma(2)
-
+    
     SlowIndicatorType = IndicatorType(SMAIndicator, 2, TQuoteType)
     FastIndicatorType = IndicatorType(SMAIndicator, 5, TQuoteType)
 
+    # Write the strategy
     mutable struct GoldenCross{A} <: AbstractStrategy
-        cashPosition::Position
-        aaplPosition::Position
+        cashPosition::Union{Nothing, Position}
+        aaplPosition::Union{Nothing, Position}
         prevSlowSMA::SlowIndicatorType
         prevFastSMA::FastIndicatorType
         slowSMA::SlowIndicatorType
@@ -62,9 +63,9 @@ import MarketData
         next::A
     end
 
-    GoldenCross(cashPosition::Position, actor::A) where {A} = GoldenCross(
-        cashPosition,
-        Position(stock, zero(Float64)),
+    GoldenCross(actor::A) where {A} = GoldenCross(
+        nothing,
+        nothing,
         SlowIndicatorType(missing),
         FastIndicatorType(missing),
         SlowIndicatorType(missing),
@@ -108,16 +109,31 @@ import MarketData
         end
     end
 
-    strat = GoldenCross(Position(cash, 1000.0), orders)
+    # Get the initial positions from the quotes feed
+    # In prod you'll get that from the real feed from your broker account
+    subscribe!(quotes |> first() |> map(q -> Position(cash, 1000.0, timestamp(q))), positions)
+    subscribe!(quotes |> first() |> map(q -> Position(stock, zero(Float64), timestamp(q))), positions)
+
+    # Create a 'strategy' block and subscribe to the feed it needs
+    strat = GoldenCross(orders)
     subscribe!(slowSMA, strat)
     subscribe!(fastSMA, strat)
     #subscribe!(positions, strat)
 
+    # Create an 'exchange' block (replace with a true exchange in prod)
+    # and subscribe to the feeds it needs
     exchange = FakeExchange(fills)
     subscribe!(quotes, exchange)
-    subscribe!(orders, exchange)
-    subscribe!(orders, logger())
+    subscribe!(orders, exchange)    
 
-    # Connect the source. This will start the feed
+    # Create a 'blotter' block that will reside in memory
+    # Subscribe to the feeds it needs (Fills)
+    blotter = InMemoryBlotter(positions)
+    subscribe!(fills, blotter)
+
+    # Print the positions feed
+    subscribe!(positions, logger())
+
+    # Connect the source. This will start feeding data. Let's roll!
     connect(source)
 end

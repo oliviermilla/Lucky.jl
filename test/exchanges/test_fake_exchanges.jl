@@ -22,7 +22,7 @@
             @test pos.order == order
             @test pos.size == order.size
             @test pos.price == ohlc.open
-            @test pos.createdAt == ohlc.timestamp
+            @test pos.timestamp == ohlc.timestamp
             @test length(exchange.pendingOrders) == 0
         end
 
@@ -54,7 +54,7 @@
         @test pos.size == inside.size
         @test pos.price == ohlc.open
         @test pos.fee == 0
-        @test pos.createdAt == ohlc.timestamp
+        @test pos.timestamp == ohlc.timestamp
     end
 
     # TODO Test LimitOrder signs

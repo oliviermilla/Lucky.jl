@@ -11,6 +11,7 @@ using Random
 
 # Same order as in Lucky.jl
 
+include("test_units.jl")
 include("test_currencies.jl")
 include("test_instruments.jl")
 include("test_quotes.jl")
@@ -24,7 +25,7 @@ include("samplers/test_ohlc_samplers.jl")
 include("operators/test_moving_average_operators.jl")
 
 include("exchanges/test_fake_exchanges.jl")
-include("blotters/test_inmemoryblotters.jl")
+include("blotters/test_in_memory_blotters.jl")
 
 # Extensions
 include("ext/test_timeseries.jl")
