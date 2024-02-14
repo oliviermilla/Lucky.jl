@@ -1,4 +1,4 @@
-import MarketData
+import MarketData # Import to avoid conflicting names such as timestamp()
 
 # A strategy is a bunch of 'blocks' connected (synchronously or asynchronously) together
 # A 'Data' block that will provide us with the feed of data we want (in our case the OHLCs quotes of AAPL taken from yahoo)
@@ -94,20 +94,20 @@ import MarketData
 
     # This is called every time a new effective cash position is received
     function Rocket.on_next!(strat::GoldenCross, position::CashPositionType)
-        println("Received cash position: $(position)")
+        @debug "Received cash position: $(position)"
         strat.cashPosition = position
         # trade(strat) Current strategy does not depend on position
     end
 
     # This is called every time a new effective AAPL position is received
     function Rocket.on_next!(strat::GoldenCross, position::StockPositionType)
-        println("Received stock position: $(position)")
+        @debug "Received stock position: $(position)"
         strat.aaplPosition = position
-        trade(strat)
+        # trade(strat) Current strategy does not depend on position
     end
 
     # This is called every time one of the subscription finishes its stream
-    Rocket.on_complete!(::GoldenCross) = println("Done!")
+    Rocket.on_complete!(strat::GoldenCross) = complete!(strat.next)
 
     function trade(strat::GoldenCross)
         if strat.prevFastSMA < strat.prevSlowSMA && strat.fastSMA >= strat.slowSMA
@@ -121,12 +121,7 @@ import MarketData
             next!(strat.next, order)
             return
         end
-    end
-
-    # Get the initial positions from the quotes feed
-    # In prod you'll get that from the real feed from your broker account
-    subscribe!(quotes |> first() |> map(CashPositionType, q -> CashPositionType(cash, 1000.0, timestamp(q))), positions)
-    subscribe!(quotes |> first() |> map(StockPositionType, q -> StockPositionType(stock, zero(Float64), timestamp(q))), positions)
+    end    
 
     # Create a 'strategy' block and subscribe to the feed it needs
     strat = GoldenCross(orders)
@@ -145,8 +140,15 @@ import MarketData
     blotter = InMemoryBlotter(positions)
     subscribe!(fills, blotter)
 
-    # Print the positions feed
-    subscribe!(positions, logger())
+    # Print to the feed
+    subscribe!(orders, logger("Orders"))
+    subscribe!(fills, logger("Fills"))
+    subscribe!(positions, logger("Positions"))
+
+    # Get the initial positions from the source data (so timestamps line up)
+    # In prod you'll get your current positions from the feed of your broker connexion
+    next!(positions, CashPositionType(cash, 1000.0, MarketData.timestamp(data[1])[1]))
+    next!(positions, StockPositionType(stock, zero(Float64), MarketData.timestamp(data[1])[1]))
 
     # Connect the source. This will start feeding data. Let's roll!
     connect(source)
