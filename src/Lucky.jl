@@ -55,13 +55,9 @@ using .Blotters
 export AbstractBlotter
 export InMemoryBlotter
 
-include("operators/OhlcOperators.jl")
-using .OhlcOperators
-export ohlc
-
-include("operators/MovingAverageOperators.jl")
-using .MovingAverageOperators
-export sma
+include("Operators.jl")
+using .Operators
+export ohlc, rolling, sma
 
 include("Strategies.jl")
 using .Strategies

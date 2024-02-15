@@ -1,10 +1,7 @@
-module OhlcOperators
-
 export ohlc
 
 using Lucky.Ohlcs
 
-using Rocket
 using Dates
 
 # Operator
@@ -61,5 +58,3 @@ end
 
 Rocket.on_error!(actor::OhlcObservableFromTrade, error) = error!(actor.next, error)
 Rocket.on_complete!(actor::OhlcObservableFromTrade) = complete!(actor.next)
-
-end

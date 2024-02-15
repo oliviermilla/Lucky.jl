@@ -6,10 +6,10 @@ using DydxV3
 using Rocket
 using Dates
 
-Rocket.on_next!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade, data::DydxV3.Trade) = update!(actor, data)
+Rocket.on_next!(actor::Lucky.Operators.OhlcObservableFromTrade, data::DydxV3.Trade) = update!(actor, data)
 
 # Logic
-@inline function set!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade, trade::DydxV3.Trade)
+@inline function set!(actor::Lucky.Operators.OhlcObservableFromTrade, trade::DydxV3.Trade)
     actor.first = trade.createdAt
     actor.last = trade.createdAt
     actor.open = trade.price
@@ -19,11 +19,11 @@ Rocket.on_next!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade, data::DydxV3
     actor.set = true
 end
 
-@inline reset!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade) = actor.set = false
+@inline reset!(actor::Lucky.Operators.OhlcObservableFromTrade) = actor.set = false
 
 # Possible TODO: Ohlc on close (versus open) time. Possible first ohlc behavior
 # See https://quant.stackexchange.com/questions/69861/formal-definition-of-open-high-low-close-ohlc-price-data
-function update!(actor::Lucky.OhlcOperators.OhlcObservableFromTrade, trade::DydxV3.Trade)
+function update!(actor::Lucky.Operators.OhlcObservableFromTrade, trade::DydxV3.Trade)
     if actor.set
         actor.last = trade.createdAt
         actor.close = trade.price

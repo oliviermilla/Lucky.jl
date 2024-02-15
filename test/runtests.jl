@@ -22,7 +22,7 @@ include("test_indicators.jl")
 
 include("test_ohlcs.jl")
 include("samplers/test_ohlc_samplers.jl")
-include("operators/test_moving_average_operators.jl")
+include("operators/test_sma_operator.jl")
 
 include("exchanges/test_fake_exchanges.jl")
 include("blotters/test_in_memory_blotters.jl")
