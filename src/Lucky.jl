@@ -41,8 +41,8 @@ export Fill
 
 include("Indicators.jl")
 using .Indicators
-export AbstractIndicator, IndicatorType
-export SMAIndicator
+export AbstractIndicator, IterableIndicator, IndicatorType
+export RollingIndicator, SMAIndicator
 
 # ==== Rocket Dependant
 

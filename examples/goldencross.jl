@@ -112,13 +112,13 @@ import MarketData # Import to avoid conflicting names such as timestamp()
     function trade(strat::GoldenCross)
         if strat.prevFastSMA < strat.prevSlowSMA && strat.fastSMA >= strat.slowSMA
             order = MarketOrder(stock, 1)
-            next!(strat.next, order)
+            next!(strat.next, order) # Send the order to whatever is subscribed.
             return
         end
 
         if strat.prevFastSMA > strat.prevSlowSMA && strat.fastSMA <= strat.slowSMA
             order = MarketOrder(stock, -1)
-            next!(strat.next, order)
+            next!(strat.next, order) # Send the order to whatever is subscribed.
             return
         end
     end    
@@ -144,6 +144,7 @@ import MarketData # Import to avoid conflicting names such as timestamp()
     subscribe!(orders, logger("Orders"))
     subscribe!(fills, logger("Fills"))
     subscribe!(positions, logger("Positions"))
+    # @show blotter.fills
 
     # Get the initial positions from the source data (so timestamps line up)
     # In prod you'll get your current positions from the feed of your broker connexion

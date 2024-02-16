@@ -1,4 +1,4 @@
-@testset "sma operator" begin
+@testset "sma()" begin
     subject = Subject(SMAIndicator)
     source = Rocket.from(1:5) |> Lucky.sma(3) |> multicast(subject)
 

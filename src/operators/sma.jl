@@ -1,12 +1,17 @@
 export sma
 
-using Lucky.Indicators
-
 using Statistics
 
-function sma(n::Int)
-    SmaType = IndicatorType(SMAIndicator, n, Float64) # TODO: Other than Float64?
-    return rolling(n) |> map(SmaType, vec -> SmaType(Statistics.mean(vec)))
+sma(n::Int) = rolling(n) |> SmaOperator(n)
+
+struct SmaOperator <: InferableOperator
+    length::Int
+end
+Rocket.operator_right(op::SmaOperator, ::Type{L}) where {L<:Any} = IndicatorType(SMAIndicator, op.length, L)
+Rocket.operator_right(op::SmaOperator, ::Type{<:IterableIndicator{Q}}) where {Q} = IndicatorType(SMAIndicator, op.length, Q)
+
+function Rocket.on_call!(::Type{L}, ::Type{R}, operator::SmaOperator, source) where {L,R}
+    return proxy(R, source, Rocket.MapProxy{L,Function}(vec -> R(Statistics.mean(vec))))
 end
 
 # Old implementation. Just keeping it for ref.

@@ -1,5 +1,7 @@
 module Operators
 
+using Lucky.Indicators
+
 using Rocket
 
 # Order matters
