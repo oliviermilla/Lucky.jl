@@ -10,8 +10,10 @@ end
 Rocket.operator_right(op::SmaOperator, ::Type{L}) where {L<:Any} = IndicatorType(SMAIndicator, op.length, L)
 Rocket.operator_right(op::SmaOperator, ::Type{<:IterableIndicator{Q}}) where {Q} = IndicatorType(SMAIndicator, op.length, Q)
 
+smaFn(rolling) = Statistics.mean(rolling)
+
 function Rocket.on_call!(::Type{L}, ::Type{R}, operator::SmaOperator, source) where {L,R}
-    return proxy(R, source, Rocket.MapProxy{L,Function}(vec -> R(Statistics.mean(vec))))
+    return proxy(R, source, Rocket.MapProxy{L,Function}(vec -> R(smaFn(vec))))
 end
 
 # Old implementation. Just keeping it for ref.

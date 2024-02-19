@@ -42,13 +42,13 @@ export Fill
 include("Indicators.jl")
 using .Indicators
 export AbstractIndicator, IterableIndicator, IndicatorType
-export RollingIndicator, SMAIndicator
+export EMAIndicator, RollingIndicator, SMAIndicator
 
 # ==== Rocket Dependant
 
 include("Exchanges.jl")
 using .Exchanges
-export AbstractExchange, FakeExchange, FakePosition
+export AbstractExchange, FakeExchange
 
 include("Blotters.jl")
 using .Blotters
@@ -57,7 +57,7 @@ export InMemoryBlotter
 
 include("Operators.jl")
 using .Operators
-export ohlc, rolling, sma
+export ema, ohlc, rolling, sma
 
 include("Strategies.jl")
 using .Strategies

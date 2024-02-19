@@ -1,7 +1,7 @@
 module Indicators
 
 export AbstractIndicator, IterableIndicator, IndicatorType
-export RollingIndicator, SMAIndicator
+export RollingIndicator, EMAIndicator, SMAIndicator
 
 using Lucky.Quotes
 
@@ -27,7 +27,21 @@ IndicatorType(I::Type{<:IterableIndicator}, length::Int, V::Type{<:Any}) = I{Val
 Base.iterate(iter::IterableIndicator) = iterate(iter.value)
 Base.iterate(iter::IterableIndicator, state) = iterate(iter.value, state)
 
-# TODO other iteration functions
+# Julia Indexing Interface
+Base.getindex(x::IterableIndicator, i) = getindex(x.value, i)
+Base.setindex!(x::IterableIndicator, v, i) = setindex!(x.value, v, i)
+Base.firstindex(x::IterableIndicator) = firstindex(x.value)
+Base.lastindex(x::IterableIndicator) = lastindex(x.value)
+
+mutable struct EMAIndicator{LT,U,V} <: ValueIndicator{V}
+    length::Integer
+    value::U
+end
+
+function EMAIndicator(length::Integer, value::V) where {V}
+    length > 0 || error("EMAIndicator: $(length) must be positive to calculate a moving average.")
+    return EMAIndicator{Val(length),Union{Missing,V},V}(length, value)
+end
 
 struct SMAIndicator{LT,U,V} <: ValueIndicator{V}
     value::U
