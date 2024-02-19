@@ -1,4 +1,9 @@
 @testset "Quotes" begin
+    @testset "Abstract Interfaces" begin        
+        struct TestQuote <: AbstractQuote end
+        @test QuoteType(TestQuote) === TestQuote
+        @test_throws ErrorException TimestampType(TestQuote)
+    end
     stock = Stock(:AAPL, :USD)
     @testset "Number" begin
         price = 51.7
@@ -50,7 +55,7 @@
             @test q1.ohlc == ohlc1
         end
         @testset "Interface" begin
-            QuoteType(stock, Float64, Date) === Lucky.Quotes.PriceQuote{InstrumentType(stock),Ohlc{Date}}
+            QuoteType(stock, Ohlc{Date}) === Lucky.Quotes.PriceQuote{InstrumentType(stock),Ohlc{Date}}
             currency(q1) == Currency{:USD}
             timestamp(q1) == ohlc1.timestamp
         end
