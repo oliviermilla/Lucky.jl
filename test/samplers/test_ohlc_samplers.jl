@@ -4,6 +4,9 @@
             ohlc = rand(Ohlc{Date})
             @test ohlc isa Ohlc{Date}
             @test ohlc.high >= ohlc.low
+            
+            ohlc2 = rand(Ohlc{Date})
+            @test ohlc != ohlc2
         end
         @testset "Vector (::Val{+Inf})" begin
             period = Day(2)

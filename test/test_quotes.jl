@@ -25,6 +25,7 @@
             @test q2 - q1 == Quote(stock, p2 - price, t2)
             @test q2 * 2 == Quote(stock, p2 * 2, t2)
             @test q2 / 2 == Quote(stock, p2 / 2, t2)
+            @test q2 < q1
 
             # Ops with missing
             @test q1 + missing === missing
@@ -55,6 +56,8 @@
         end
         @testset "Operators" begin
             ohlc2 = rand(Ohlc{Date})
+            #println("1: $(ohlc1)")
+            #println("2: $(ohlc2)")
             q2 = Quote(stock, ohlc2)
 
             # Valid ops
@@ -62,6 +65,7 @@
             @test_throws MethodError q2 - q1
             @test q2 * 2 == Quote(stock, ohlc2 * 2)
             @test q2 / 2 == Quote(stock, ohlc2 / 2)
+            @test_broken q2 < q1 == ohlc2.close < ohlc1.close
 
             # Ops with missing
             @test q1 + missing === missing
@@ -74,7 +78,7 @@
             @test_throws MethodError q3 - q1
 
             # Convert
-            @test convert(Float64,q3) == Float64(ohlc2.close)
+            @test convert(Float64, q3) == Float64(ohlc2.close)
         end
     end
 end
