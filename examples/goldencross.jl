@@ -45,7 +45,7 @@ import MarketData # Import to avoid conflicting names such as timestamp()
     fills = Subject(AbstractFill) # Fills feed. Subscribe to it to get the fills of the exchange.
     positions = Subject(Position) # Positions feed. Subscribe to it to get the positions returned by the exchange.
 
-    # Iterate the data (or a live feed)
+    # Iterate the data (as if a live feed)
     # Map the data to quotes of the above stock instrument
     # Multicast to the quotes feed so any actor can subscribe.    
     source = Rocket.from(data) |> map(TQuoteType, ohlc -> Quote(stock, ohlc)) |> multicast(quotes)
@@ -89,7 +89,7 @@ import MarketData # Import to avoid conflicting names such as timestamp()
         @debug "Received fast SMA: $(data)"
         strat.prevFastSMA = strat.fastSMA
         strat.fastSMA = data
-        # trade(strat) Current strategy does not depend on position
+        trade(strat)
     end
 
     # This is called every time a new effective cash position is received
