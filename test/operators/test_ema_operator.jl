@@ -3,6 +3,7 @@
     source = Rocket.from(1:5) |> Lucky.ema(3) |> multicast(subject)
 
     counter = Int(0)
+    prev = nothing
     function testNext(avg::EMAIndicator)        
         val = avg.value
         counter += 1
@@ -13,10 +14,11 @@
         elseif counter == 3            
             @test val == (1 + 2 + 3) / 3 # SMA(3)
         elseif counter == 4
-            @test val == (4 - 2) * (2/(3+1)) + (1 + 2 + 3) / 3
+            @test val == (4 - prev) * (2/(3+1)) + prev
         elseif counter == 5
-            @test val == (5 - 3) * (2/(3+1)) + (4 - 2) * (2/(3+1)) + (1 + 2 + 3) / 3
+            @test val == (5 - prev) * (2/(3+1)) + prev
         end
+        prev = val
     end
 
     function testComplete()
