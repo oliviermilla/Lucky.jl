@@ -24,7 +24,7 @@ At the day of writing, the libray integrates the following integrations:
 |--------------------------------------------------------------|-------------------------------------------------------------------|------------------------------------------------|
 | [MarketData.jl](https://github.com/JuliaQuant/MarketData.jl) | Historical financial time series from Yahoo, FRED, ONS.           | Yahoo - :smile: Fred - Untested Ons - Untested |
 | [TimeSeries.jl](https://github.com/JuliaStats/TimeSeries.jl) | Lightweight framework for working with time series data in Julia. | :smile:                                        |
-| [Jib.jl](https://github.com/lbilli/Jib.jl)                   | Pure Julia API to Interactive Brokers                             | :construction_worker:                          |
+| [InteractiveBrokers.jl](https://github.com/oliviermilla/InteractiveBrokers.jl)                   | Pure Julia API to Interactive Brokers                             | :construction_worker:                          |
 
 ## Data Types
 The library provides interface to handle Open High Low Close data (if that's what you're into) natively as well as samplers to generate random data for quotes, etc.
