@@ -15,7 +15,7 @@ function emaFn(rolling, indic::EMAIndicator)
         return indic
     end
     mult = 2 / (indic.length + 1)
-    indic.value = (rolling[end] - indic.value) * mult + indic.value
+    indic.value += (rolling[end] - indic.value) * mult
     return indic
 end
 
