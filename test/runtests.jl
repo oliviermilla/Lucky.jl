@@ -25,6 +25,8 @@ include("samplers/test_ohlc_samplers.jl")
 include("operators/test_rolling_operator.jl")
 include("operators/test_ema_operator.jl")
 include("operators/test_sma_operator.jl")
+include("operators/test_highwatermark_operator.jl")
+include("operators/test_drawdown_operator.jl")
 
 include("exchanges/test_fake_exchanges.jl")
 include("blotters/test_in_memory_blotters.jl")
@@ -32,5 +34,3 @@ include("blotters/test_in_memory_blotters.jl")
 # Extensions
 include("ext/test_timeseries.jl")
 include("ext/test_dydxv3_ohlc_operators.jl")
-
-include("test_performances.jl")
