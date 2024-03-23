@@ -12,6 +12,7 @@ using Random
 # Same order as in Lucky.jl
 
 include("test_units.jl")
+include("test_utils.jl")
 include("test_currencies.jl")
 include("test_instruments.jl")
 include("test_quotes.jl")
