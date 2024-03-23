@@ -1,7 +1,8 @@
 export DrawdownIndicator
 
 mutable struct DrawdownIndicator{U,V} <: ValueIndicator{V}
+    highwatermark::U
     value::U
 end
 
-DrawdownIndicator(value::V) where {V} = DrawdownIndicator{Union{Missing,V},V}(value)
+#DrawdownIndicator(highwatermark=missing, value::V) where {V} = DrawdownIndicator{Union{Missing,V},V}(value)

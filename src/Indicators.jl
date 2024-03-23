@@ -6,6 +6,8 @@ using Lucky.Quotes
 
 abstract type AbstractIndicator end
 
+value(i::AbstractIndicator) = i.value
+
 IndicatorType(T::Type{<:AbstractIndicator}, params...) = error("You probably forgot to implement IndicatorType(::$(T), $(params...))")
 IndicatorType(::I) where {I<:AbstractIndicator} = I
 
