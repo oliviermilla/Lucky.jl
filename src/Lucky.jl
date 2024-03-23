@@ -1,9 +1,11 @@
 module Lucky
 
-# ==== Constants
+# ==== Constants & Utils
 include("Constants.jl")
 using .Constants
 export ORDER_SIDE
+
+include("Utils.jl")
 
 # ==== Financial types
 include("Units.jl")
@@ -41,8 +43,8 @@ export Fill
 
 include("Indicators.jl")
 using .Indicators
-export AbstractIndicator, IterableIndicator, IndicatorType
-export EMAIndicator, RollingIndicator, SMAIndicator
+export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
+export DrawdownIndicator, EMAIndicator, HighWaterMarkIndicator, RollingIndicator, SMAIndicator
 
 # ==== Rocket Dependant
 
@@ -57,16 +59,10 @@ export InMemoryBlotter
 
 include("Operators.jl")
 using .Operators
-export ema, ohlc, rolling, sma
+export drawdown, ema, highwatermark, ohlc, rolling, sma
 
 include("Strategies.jl")
 using .Strategies
 export AbstractStrategy
-
-# === Others
-
-include("Performances.jl")
-using .Performances
-export drawdown
 
 end # module Lucky

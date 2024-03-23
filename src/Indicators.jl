@@ -1,11 +1,12 @@
 module Indicators
 
-export AbstractIndicator, IterableIndicator, IndicatorType
-export RollingIndicator, EMAIndicator, SMAIndicator
+export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
 
 using Lucky.Quotes
 
 abstract type AbstractIndicator end
+
+value(i::AbstractIndicator) = i.value
 
 IndicatorType(T::Type{<:AbstractIndicator}, params...) = error("You probably forgot to implement IndicatorType(::$(T), $(params...))")
 IndicatorType(::I) where {I<:AbstractIndicator} = I
@@ -17,6 +18,7 @@ Base.isless(x::I, y::I) where {I<:AbstractIndicator} = isless(x.value, y.value)
 abstract type ValueIndicator{V} <: AbstractIndicator end
 Base.isless(x::ValueIndicator{V1}, y::ValueIndicator{V2}) where {V1,V2} = isless(x.value, y.value)
 
+IndicatorType(I::Type{<:ValueIndicator}, V::Type{<:Any}) = I{Union{Missing,V},V}
 IndicatorType(I::Type{<:ValueIndicator}, length::Integer, V::Type{<:Any}) = I{Val(length),Union{Missing,V},V}
 
 abstract type IterableIndicator{V} <: AbstractIndicator end
@@ -33,31 +35,10 @@ Base.setindex!(x::IterableIndicator, v, i) = setindex!(x.value, v, i)
 Base.firstindex(x::IterableIndicator) = firstindex(x.value)
 Base.lastindex(x::IterableIndicator) = lastindex(x.value)
 
-mutable struct EMAIndicator{LT,U,V} <: ValueIndicator{V}
-    length::Integer
-    value::U
-end
-
-function EMAIndicator(length::Integer, value::V) where {V}
-    length > 0 || error("EMAIndicator: $(length) must be positive to calculate a moving average.")
-    return EMAIndicator{Val(length),Union{Missing,V},V}(length, value)
-end
-
-struct SMAIndicator{LT,U,V} <: ValueIndicator{V}
-    value::U
-end
-
-function SMAIndicator(length::Integer, value::V) where {V}
-    length > 0 || error("SMAIndicator: $(length) must be positive to calculate a moving average.")
-    return SMAIndicator{Val(length),Union{Missing,V},V}(value)
-end
-
-# mean returns a float when given integers
-IndicatorType(::Type{SMAIndicator}, length::Integer, V::Type{<:Integer}) = SMAIndicator{Val(length),Union{Missing,Float64},Float64}
-
-struct RollingIndicator{LT,T,V} <: IterableIndicator{V}
-    value::T
-end
-RollingIndicator(length::Int, value::T) where {V,T<:AbstractArray{V}} = RollingIndicator{Val(length),T,V}(value)
+include("indicators/DrawdownIndicators.jl")
+include("indicators/EMAIndicators.jl")
+include("indicators/HighWaterMarkIndicators.jl")
+include("indicators/RollingIndicators.jl")
+include("indicators/SMAIndicators.jl")
 
 end
