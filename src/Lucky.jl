@@ -1,9 +1,11 @@
 module Lucky
 
-# ==== Constants
+# ==== Constants & Utils
 include("Constants.jl")
 using .Constants
 export ORDER_SIDE
+
+include("Utils.jl")
 
 # ==== Financial types
 include("Units.jl")
