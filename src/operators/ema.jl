@@ -14,11 +14,11 @@ function emaFn(rolling, indic::EMAIndicator)
         indic.value = smaFn(rolling)
         return indic
     end
-    mult = 2 / (indic.length + 1)
+    mult = 2 / (period(indic) + 1)
     indic.value += (rolling[end] - indic.value) * mult
     return indic
 end
 
 function Rocket.on_call!(::Type{L}, ::Type{R}, operator::EmaOperator, source) where {L,R}        
-    return proxy(R, source, Rocket.ScanProxy{L, R, Function}(emaFn, R(operator.length, missing)))
+    return proxy(R, source, Rocket.ScanProxy{L, R, Function}(emaFn, R(missing)))
 end

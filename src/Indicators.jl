@@ -1,6 +1,7 @@
 module Indicators
 
-export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
+export AbstractIndicator, IterableIndicator, PeriodicValueIndicator, ValueIndicator, IndicatorType
+export period, value
 
 using Lucky.Quotes
 
@@ -19,7 +20,11 @@ abstract type ValueIndicator{V} <: AbstractIndicator end
 Base.isless(x::ValueIndicator{V1}, y::ValueIndicator{V2}) where {V1,V2} = isless(x.value, y.value)
 
 IndicatorType(I::Type{<:ValueIndicator}, V::Type{<:Any}) = I{Union{Missing,V},V}
-IndicatorType(I::Type{<:ValueIndicator}, length::Integer, V::Type{<:Any}) = I{Val(length),Union{Missing,V},V}
+
+abstract type PeriodicValueIndicator{LT,V} <: ValueIndicator{V} end
+
+IndicatorType(I::Type{<:PeriodicValueIndicator}, period::Integer, V::Type{<:Any}) = I{period,Union{Missing,V},V}
+period(::PeriodicValueIndicator{LT,V}) where {LT,V} = LT
 
 abstract type IterableIndicator{V} <: AbstractIndicator end
 

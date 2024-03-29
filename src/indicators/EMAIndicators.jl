@@ -1,15 +1,10 @@
 export EMAIndicator
 
-mutable struct EMAIndicator{LT,U,V} <: ValueIndicator{V}
-    length::Integer
+mutable struct EMAIndicator{LT,U,V} <: PeriodicValueIndicator{LT, V}
     value::U
 end
 
-function EMAIndicator(length::Integer, value::V) where {V}
-    length > 0 || error("EMAIndicator: $(length) must be positive to calculate a moving average.")
-    return EMAIndicator{Val(length),Union{Missing,V},V}(length, value)
+function EMAIndicator(period::Integer, value::V) where {V}
+    period > 0 || error("EMAIndicator: $(period) must be positive to calculate a moving average.")
+    return EMAIndicator{period,Union{Missing,V},V}(value)
 end
-
-# function EMAIndicator{LT,U,V}(value) where {x,LT<:Val{x},U,V}
-#     return EMAIndicator{LT,U,V}(x, value)
-# end
