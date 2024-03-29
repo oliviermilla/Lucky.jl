@@ -1,6 +1,6 @@
 module InteractiveBrokersExt
 
-# using InteractiveBrokers
+using InteractiveBrokers
 
 # wrap = InteractiveBrokers.Wrapper(
 #          # Customized methods go here

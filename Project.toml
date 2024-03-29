@@ -5,19 +5,20 @@ version = "0.3.2"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-InteractiveBrokers = "f310f2d2-a263-11e8-3998-47bd686f18f7"
 Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [weakdeps]
 DydxV3 = "81fc79e4-7aed-40c1-9951-444e465e3245"
+InteractiveBrokers = "f310f2d2-a263-11e8-3998-47bd686f18f7"
 MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [extensions]
 DydxV3Ext = "DydxV3"
+InteractiveBrokersExt = "InteractiveBrokers"
 MarketDataExt = "MarketData"
 RandomExt = "Random"
 TimeSeriesExt = "TimeSeries"
@@ -32,4 +33,12 @@ BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "BenchmarkTools", "DydxV3", "MarketData", "Random", "TimeSeries"]
+test = [
+    "Test",
+    "BenchmarkTools",
+    "DydxV3",
+    "InteractiveBrokers",
+    "MarketData",
+    "Random",
+    "TimeSeries",
+]
