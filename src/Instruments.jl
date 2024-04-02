@@ -5,7 +5,7 @@ import Lucky.Units as Units
 
 abstract type Instrument end
 
-# InstrumentType(I::Type{<:Instrument}, params...) = error("You probably forget to implement InstrumentType($(I), $(params...))")
+# InstrumentType(I::Type{<:Instrument}, params...) = error("You probably forgot to implement InstrumentType($(I), $(params...))")
 InstrumentType(::I) where {I<:Instrument} = I
 
 Units.currency(I::Type{<:Instrument}) = error("You probably forgot to implement currency(::$(I)")
