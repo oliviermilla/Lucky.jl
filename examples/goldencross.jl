@@ -1,3 +1,6 @@
+using Lucky
+using Dates
+using Test
 import MarketData # Import to avoid conflicting names such as timestamp()
 
 # A strategy is a bunch of 'blocks' connected (synchronously or asynchronously) together
