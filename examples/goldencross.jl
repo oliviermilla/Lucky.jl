@@ -1,3 +1,7 @@
+using Test
+using Dates
+using Lucky
+using Rocket
 import MarketData # Import to avoid conflicting names such as timestamp()
 
 # A strategy is a bunch of 'blocks' connected (synchronously or asynchronously) together
@@ -19,7 +23,7 @@ import MarketData # Import to avoid conflicting names such as timestamp()
     symbol = :AAPL
 
     # Use the offline dataset provided by the MarketData package
-    data = MarketData.AAPL
+    data = getfield(MarketData, symbol)
 
     # Or uncomment these lines to get 3 months of data from yahoo from whatever period
     # today = Dates.now(Dates.UTC)
