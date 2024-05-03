@@ -1,0 +1,102 @@
+module InteractiveBrokersExt
+
+using InteractiveBrokers
+using Rocket
+
+# TODO Type stability
+struct InteractiveBrokersObservable <: Subscribable{Any}
+    wrap::InteractiveBroker.Wrapper
+    host::IPAddr
+    port::UInt
+    clientId::Int
+    connectOptions::String
+    optionalCapabilities::String
+    function InteractiveBrokersObservable(wrap::InteractiveBrokers.Wrapper; host::UnionIPAddr=getalladdrinfo("localhost")[1], port::UInt=4002, clientId::Int=1, connectOptions::String="", optionalCapabilities::String="")
+        return new(wrap, host, port, clientId, connectOptions, optionalCapabilities)
+    end
+end
+
+defaultMapper = Dict{Symbol,Function}
+
+struct Dispatcher
+    events::Vector{Symbol}
+    targets::Vector{Rocket.Actor}
+    applys::Vector{Function}
+end
+Dispatcher() = Dispatcher(Vector{Symbol}(), Vector{Rocket.Actor}(), Vector{Function}())
+
+function dispatch(dispatcher::Dispatcher, event::Symbol, actor::Actor, fn::Union{Nothng,Function}=nothing)
+    func = identity
+    if isnothing(fn) && haskey(defaultMapper, event)
+        func = defaultMapper[event]
+    end
+    push!(dispatcher.events, event)
+    push!(dispatcher.targets, actor)
+    push!(dispatcher.applys, func)
+    return dispatcher
+end
+
+function wrapper(dispatcher::Dispatcher)
+    wrap = InteractiveBrokers.Wrapper()
+    for idx in dispatcher.events
+        setproperty!(wrap, dispatcher.events[idx], x -> next!(targets[idx], applys[idx](x)))
+    end
+    return wrap
+end
+
+function Rocket.on_subscribe!(obs::InteractiveBrokersObservable, dispatcher)
+    ib = InteractiveBrokers.connect(obs.host, obs.port, obs.clientId, obs.connectOptions, obs.optionalCapabilities)
+    InteractiveBrokers.start_reader(ib, wrapper(dispatcher))
+    return InteractiveBrokersObservableSubscription(ib)
+end
+
+struct InteractiveBrokersObservableSubscription <: Teardown
+    connection::InteractiveBrokers.Connection
+end
+
+Rocket.as_teardown(::Type{<:InteractiveBrokersObservableSubscription}) = UnsubscribableTeardownLogic()
+
+function Rocket.on_unsubscribe!(subscription::InteractiveBrokersObservableSubscription)
+    disconnect(subscription.connection)
+end
+
+# wrap = InteractiveBrokers.Wrapper(
+#          # Customized methods go here
+#          error= (id, errorCode, errorString, advancedOrderRejectJson) ->
+#                   println("Error: $(something(id, "NA")) $errorCode $errorString $advancedOrderRejectJson"),
+
+#          nextValidId= (orderId) -> println("Next OrderId: $orderId"),
+
+#          managedAccounts= (accountsList) -> println("Managed Accounts: $accountsList")
+
+#          # more method overrides can go here...
+#        );
+
+# # Connect to the server with clientId = 1
+# ib = InteractiveBrokers.connect(4002, 1);
+
+# # Start a background Task to process the server responses
+# InteractiveBrokers.start_reader(ib, wrap);
+
+# # Define contract
+# contract = InteractiveBrokers.Contract(symbol="GOOG",
+#                         secType="STK",
+#                         exchange="SMART",
+#                         currency="USD");
+
+# # Define order
+# order = InteractiveBrokers.Order();
+# order.action        = "BUY"
+# order.totalQuantity = 10
+# order.orderType     = "LMT"
+# order.lmtPrice      = 100
+
+# orderId = 1    # Should match whatever is returned by the server
+
+# # Send order
+# InteractiveBrokers.placeOrder(ib, orderId, contract, order)
+
+# # Disconnect
+# InteractiveBrokers.disconnect(ib)
+
+end

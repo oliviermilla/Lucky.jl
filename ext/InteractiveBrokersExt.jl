@@ -1,44 +1,74 @@
 module InteractiveBrokersExt
 
-using InteractiveBrokers
+# using Lucky
 
-# wrap = InteractiveBrokers.Wrapper(
-#          # Customized methods go here
-#          error= (id, errorCode, errorString, advancedOrderRejectJson) ->
-#                   println("Error: $(something(id, "NA")) $errorCode $errorString $advancedOrderRejectJson"),
+# using InteractiveBrokers
+# using Rocket
 
-#          nextValidId= (orderId) -> println("Next OrderId: $orderId"),
+# struct InteractiveBrokersObservable <: Subscribable{Nothing}
+#     events::Vector{Symbol}
+#     targets::Vector{Rocket.Subject}
+#     applys::Vector{Function}   
 
-#          managedAccounts= (accountsList) -> println("Managed Accounts: $accountsList")
+#     host::Union{Nothing, Any} # IPAddr (not typed to avoid having to add Sockets to Project.toml 1.10)
+#     port::Int
 
-#          # more method overrides can go here...
-#        );
+#     clientId::Int
 
-# # Connect to the server with clientId = 1
-# ib = InteractiveBrokers.connect(4002, 1);
+#     connectOptions::String
+#     optionalCapabilities::String
 
-# # Start a background Task to process the server responses
-# InteractiveBrokers.start_reader(ib, wrap);
+#     function InteractiveBrokersObservable(host=nothing, port::Int=4002, clientId::Int=1, connectOptions::String="", optionalCapabilities::String="")
+#         return new(Vector{Symbol}(), Vector{Rocket.Subject}(), Vector{Function}(), host, port, clientId, connectOptions, optionalCapabilities)
+#     end
+# end
 
-# # Define contract
-# contract = InteractiveBrokers.Contract(symbol="GOOG",
-#                         secType="STK",
-#                         exchange="SMART",
-#                         currency="USD");
+# struct InteractiveBrokersObservableSubscription <: Teardown
+#     connection::InteractiveBrokers.Connection
+# end
 
-# # Define order
-# order = InteractiveBrokers.Order();
-# order.action        = "BUY"
-# order.totalQuantity = 10
-# order.orderType     = "LMT"
-# order.lmtPrice      = 100
+# function Rocket.on_subscribe!(obs::InteractiveBrokersObservable, actor)
+#     ib = InteractiveBrokers.connect(obs.host, obs.port, obs.clientId, obs.connectOptions, obs.optionalCapabilities)
+#     InteractiveBrokers.start_reader(ib, wrapper(obs))
+#     return InteractiveBrokersObservableSubscription(ib)
+# end
 
-# orderId = 1    # Should match whatever is returned by the server
+# Rocket.as_teardown(::Type{<:InteractiveBrokersObservableSubscription}) = UnsubscribableTeardownLogic()
 
-# # Send order
-# InteractiveBrokers.placeOrder(ib, orderId, contract, order)
+# function Rocket.on_unsubscribe!(subscription::InteractiveBrokersObservableSubscription)
+#     disconnect(subscription.connection)
+# end
 
-# # Disconnect
-# InteractiveBrokers.disconnect(ib)
+# function Lucky.service(::Val{:interactivebrokers}, host=nothing, port::Int=4002, clientId::Int=1, connectOptions::String="", optionalCapabilities::String="")
+#     obs = InteractiveBrokersObservable(host, port, clientId, connectOptions, optionalCapabilities)
+#     refCounts[obs] = obs |> share()
+#     return obs
+# end
+
+# defaultMapper = Dict{Symbol,Pair{Function,Type}}()
+# refCounts = Dict{InteractiveBrokersObservable, Rocket.Observable}()
+
+# function Lucky.feed(client::InteractiveBrokersObservable, event::Symbol, applyFunction::Function, outputType::Type)
+#     subject = Subject(outputType)
+
+#     push!(client.events, event)
+#     push!(client.targets, subject)
+#     push!(client.applys, applyFunction)
+
+#     return subject
+# end
+
+# function Lucky.feed(client::InteractiveBrokersObservable, event::Symbol)
+#     haskey(defaultMapper, event) && return feed(client, event, defaultMapper[event][1], defaultMapper[event][2])
+#     return faulted("No default mapping function for $(event). Provide one or contribute a default implementation.")
+# end
+
+# function wrapper(client::InteractiveBrokersObservable)
+#     wrap = InteractiveBrokers.Wrapper()
+#     for idx in client.events
+#         setproperty!(wrap, client.events[idx], x -> next!(targets[idx], applys[idx](x)))
+#     end
+#     return wrap
+# end
 
 end
