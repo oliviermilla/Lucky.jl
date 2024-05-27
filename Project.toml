@@ -22,6 +22,7 @@ RandomExt = "Random"
 TimeSeriesExt = "TimeSeries"
 
 [compat]
+DydxV3 = "0.7"
 MarketData = "0.14"
 Rocket = "1.7.2"
 Statistics = "1"
