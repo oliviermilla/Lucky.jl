@@ -26,6 +26,7 @@ DydxV3 = "0.7"
 MarketData = "0.14"
 Rocket = "1.7.2"
 Statistics = "1"
+TimeSeries = "0.24"
 julia = "1.9"
 
 [extras]
