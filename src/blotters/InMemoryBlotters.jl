@@ -15,6 +15,8 @@ struct InMemoryBlotter <: AbstractBlotter
 end
 @inline InMemoryBlotter(subject::Subject) = InMemoryBlotter(Dict{Type{<:Instrument}, Vector{Fill}}(), subject)
 
+blotter(::Val{:inmemory}, subject::Subject) = InMemoryBlotter(subject)
+
 function Rocket.on_next!(actor::InMemoryBlotter, fill::Fill)
     key = typeof(fill.order.instrument)
     if !haskey(actor.fills, key)

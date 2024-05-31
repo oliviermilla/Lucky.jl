@@ -21,6 +21,8 @@ end
 
 @inline FakeExchange(subject::Subject) = FakeExchange(Dict{Type{<:Instrument},Vector{AbstractOrder}}(), subject)
 
+exchange(::Val{:fake}, subject::Subject) = FakeExchange(subject)
+
 Rocket.on_error!(actor::FakeExchange, error) = error!(actor.next, error)
 Rocket.on_complete!(actor::FakeExchange) = complete!(actor.next)
 
