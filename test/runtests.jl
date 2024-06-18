@@ -39,6 +39,3 @@ include("ext/test_timeseries.jl")
 include("ext/test_dydxv3_ohlc_operators.jl")
 include("ext/test_interactivebrokers_ext.jl")
 
-# Performances
-include("test_performances.jl")
-

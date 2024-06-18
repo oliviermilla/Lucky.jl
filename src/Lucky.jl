@@ -67,10 +67,6 @@ export AbstractStrategy
 
 # === Others
 
-include("Performances.jl")
-using .Performances
-export drawdown
-
 include("observables/Feeders.jl")
 using .Feeders
 # Do not export feed (too generic name)
