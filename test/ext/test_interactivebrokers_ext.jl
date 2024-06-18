@@ -4,22 +4,19 @@
             client = Lucky.service(:interactivebrokers)
             @test client isa Rocket.Subscribable
                         
-            reqMarketDataType(client, InteractiveBrokers.DELAYED)
+            InteractiveBrokers.reqMarketDataType(client, InteractiveBrokers.DELAYED)
 
             stock = Stock(:AAPL,:USD)
 
-            qt = Lucky.feed(client, stock, ns) # reqMktData should return a Subject
+            qt = Lucky.feed(client, stock) # reqMktData should return a Subscribable
+            @test Rocket.as_subscribable(qt) isa SimpleSubscribableTrait # or ScheduledSubscribableTrait
             subscribe!(qt, logger())
-            # InteractiveBrokers.reqMktData(ib, 1, contract, "100,101,104,106,165,221,225,236", false)
-            #TODO Test if a subject
-            # ex = Lucky.exchange(client)
+            # TODO Test quote params InteractiveBrokers.reqMktData(ib, 1, contract, "100,101,104,106,165,221,225,236", false)
+            # TODO Test if a subject            
 
-            # bl = Lucky.blotter(client)
-
-            # # Do the wiring
-            connect(client)
-            sleep(1000)
-            disconnect(client)
+            # connect
+            # connect(client)
+            # disconnect(client.connection)
         end
         @testset "Contract" begin
             stock = Stock(:AAPL, :USD)

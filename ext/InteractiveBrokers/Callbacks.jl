@@ -21,15 +21,19 @@ function nextValidId(ib::InteractiveBrokersObservable, orderId::Int)
 end
 
 function tickPrice(ib::InteractiveBrokersObservable, tickerId::Int, field::String, price::Union{Float64,Nothing}, size::Union{Float64,Nothing}, attrib::InteractiveBrokers.TickAttrib)
-    # data received: 1 DELAYED_BID -1.0
+    # TODO use attrib
+    # ex data: 1 DELAYED_BID -1.0
     mapping = ib.requestMappings[Pair(tickerId, :tickPrice)]
-    subject = mapping[2]
-    next!(subject, field)    
+    qte = Lucky.PriceQuote(mapping[3], price, nothing)
+    next!(mapping[2], qte)
+end
+
+function tickSize(ib::InteractiveBrokersObservable, tickerId::Int, field::String, size::Float64)
+    #TODO Use & dispatch
 end
 
 function tickString(ib::InteractiveBrokersObservable, tickerId::Int, tickType::String, value::String)
-    # data received: 1 DELAYED_LAST_TIMESTAMP 1718409598
-    # TODO Dispatch
-    # TODO Merge with tickPrice Data !!!!
-    println(tickerId, tickType, value)
+    # ex data: 1 DELAYED_LAST_TIMESTAMP 1718409598
+    mapping = ib.requestMappings[Pair(tickerId, :tickString)]
+    next!(mapping[2], unix2datetime(parse(Int64,value))) # TODO Handle timezones
 end

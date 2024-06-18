@@ -1,25 +1,13 @@
 module InteractiveBrokersExt
 
-
-# c = client(:interactivebrokers) # Returns an observable with the connectable & count thing.
-# function on_subscribe()
-#     # set wrapper
-#     # start client and set teardown.
-# end
-# feed(c, blahblah) # Returns an observable subscribed to c.
-# exchange = broker(c) # returns an Exchange
-# ledger = ledger(c)
-# pos = feed(c, blahblah)
-# subscribe(pos, ledger)
-
-# connect(c)
-
 using InteractiveBrokers
 using Lucky
 using Rocket
+using Dates
 
 mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
-    requestMappings::Dict{Pair{Int,Symbol},Tuple{Function,Rocket.Subject, Any}}
+    requestMappings::Dict{Pair{Int,Symbol},Tuple{Function,Rocket.Subject,Any}}
+    mergedCallbacks::Dict{Symbol,Rocket.Subscribable}
 
     host::Union{Nothing,Any} # IPAddr (not typed to avoid having to add Sockets to Project.toml 1.10)
     port::Union{Nothing,Int}
@@ -36,7 +24,19 @@ mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
     pendingCmds::Vector{Function}
 
     function InteractiveBrokersObservable(host=nothing, port::Union{Nothing,Int}=nothing, clientId::Union{Nothing,Int}=nothing, connectOptions::Union{Nothing,String}=nothing, optionalCapabilities::Union{Nothing,String}=nothing)
-        ib = new(Dict{Pair{Int,Symbol},Tuple{Function,Rocket.Subject, Any}}(), host, port, clientId, connectOptions, optionalCapabilities, nothing, nothing, nothing, Vector{Function}())
+        ib = new(
+            Dict{Pair{Int,Symbol},Tuple{Function,Rocket.Subject,Any}}(),
+            Dict{Symbol,Rocket.Subscribable}(),
+            host,
+            port,
+            clientId,
+            connectOptions,
+            optionalCapabilities,
+            nothing,
+            nothing,
+            nothing,
+            Vector{Function}()
+        )
         ib.connectable = ib |> publish()
         ib.obs = ib.connectable |> ref_count()
         return ib
@@ -82,32 +82,33 @@ function Lucky.service(::Val{:interactivebrokers}; host=nothing, port::Int=4001,
     return InteractiveBrokersObservable(host, port, clientId, connectOptions, optionalCapabilities)
 end
 
-function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument, callback::Union{Nothing,Function}=nothing, outputType::Type=Any)
-    # TODO default subject type depending on callback
-    subject = Subject(outputType)
-
+function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument) #, callback::Union{Nothing,Function}=nothing, outputType::Type=Any)    
     #TODO Next Valid Id
     requestId = 1
     # TODO options
     InteractiveBrokers.reqMktData(client, requestId, instr, "", false)
-    
-    _callback::Function = identity    
-    if isnothing(callback)
-        # TODO callbacks depending on requested data
-        _callback = tickPrice
-    end
-    client.requestMappings[Pair(requestId, :tickPrice)] = (_callback, subject, instr)
-    # TODO Clean up 
-    client.requestMappings[Pair(requestId, :tickString)] = (tickString, subject, instr)
 
-    subscribe!(client.obs, subject)
-    return subject
+    # TODO callbacks depending on requested data
+
+    tickPriceSubject = Subject(Lucky.PriceQuote)
+    tickSizeSubject = Subject(Pair)
+    tickStringSubject = Subject(DateTime)
+    client.requestMappings[Pair(requestId, :tickPrice)] = (tickPrice, tickPriceSubject, instr)
+    client.requestMappings[Pair(requestId, :tickSize)] = (tickSize, tickSizeSubject, instr)
+    client.requestMappings[Pair(requestId, :tickString)] = (tickString, tickStringSubject, instr)
+
+    # TODO default subject type depending on callback    
+    merge = (tup::Tuple{Lucky.PriceQuote, DateTime}) -> Quote(tup[1].instrument, tup[1].price, tup[2])
+    merged = Rocket.zipped(tickPriceSubject, tickStringSubject) |> Rocket.map(Lucky.PriceQuote, merge)
+
+    # Output callback
+    client.mergedCallbacks[:tick] = merged
+
+    # subscribe!(client.obs, tickPriceSubject)
+    # subscribe!(client.obs, tickStringSubject)
+
+    return merged
 end
-
-# function Lucky.feed(client::InteractiveBrokersObservable, event::Symbol)
-#     haskey(defaultMapper, event) && return feed(client, event, defaultMapper[event][1], defaultMapper[event][2])
-#     return faulted("No default mapping function for $(event). Provide one or contribute a default implementation.")
-# end
 
 function wrapper(client::InteractiveBrokersObservable)
     wrap = InteractiveBrokers.Wrapper(client)
@@ -117,7 +118,7 @@ function wrapper(client::InteractiveBrokersObservable)
     setproperty!(wrap, :managedAccounts, managedAccounts)
     setproperty!(wrap, :nextValidId, nextValidId)
 
-    for (pair,tuple) in client.requestMappings        
+    for (pair, tuple) in client.requestMappings
         setproperty!(wrap, pair.second, tuple[1])
     end
     return wrap
