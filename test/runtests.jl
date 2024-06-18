@@ -6,6 +6,8 @@ using Rocket
 using Dates
 using Random
 
+using InteractiveBrokers
+
 # Uncomment if you want to run examples
 # include("../examples/goldencross.jl")
 
@@ -35,3 +37,8 @@ include("blotters/test_in_memory_blotters.jl")
 # Extensions
 include("ext/test_timeseries.jl")
 include("ext/test_dydxv3_ohlc_operators.jl")
+include("ext/test_interactivebrokers_ext.jl")
+
+# Performances
+include("test_performances.jl")
+
