@@ -9,6 +9,8 @@ mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
     requestMappings::Dict{Pair{Int,Symbol},Tuple{Function,Rocket.Subject,Any}}
     mergedCallbacks::Dict{Symbol,Rocket.Subscribable}
 
+    nextValidId::Union{Missing, Int}
+
     host::Union{Nothing,Any} # IPAddr (not typed to avoid having to add Sockets to Project.toml 1.10)
     port::Union{Nothing,Int}
 
@@ -27,6 +29,7 @@ mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
         ib = new(
             Dict{Pair{Int,Symbol},Tuple{Function,Rocket.Subject,Any}}(),
             Dict{Symbol,Rocket.Subscribable}(),
+            missing,
             host,
             port,
             clientId,
@@ -82,9 +85,9 @@ function Lucky.service(::Val{:interactivebrokers}; host=nothing, port::Int=4001,
     return InteractiveBrokersObservable(host, port, clientId, connectOptions, optionalCapabilities)
 end
 
-function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument) #, callback::Union{Nothing,Function}=nothing, outputType::Type=Any)    
-    #TODO Next Valid Id
-    requestId = 1
+function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument) #, callback::Union{Nothing,Function}=nothing, outputType::Type=Any)            
+    requestId = 1 # TODO nextValidId(client)
+
     # TODO options
     InteractiveBrokers.reqMktData(client, requestId, instr, "", false)
 
@@ -108,6 +111,16 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument) #, 
     # subscribe!(client.obs, tickStringSubject)
 
     return merged
+end
+
+function nextValidId(ib::InteractiveBrokersObservable)
+    isnothing(ib.connection) && return nothing
+
+    if ismissing(ib.nextValidId)
+        InteractiveBrokers.reqIds(ib)
+    end
+
+    return ib.nextValidId
 end
 
 function wrapper(client::InteractiveBrokersObservable)
