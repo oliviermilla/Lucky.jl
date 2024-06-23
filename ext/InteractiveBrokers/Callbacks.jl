@@ -16,8 +16,7 @@ function managedAccounts(ib::InteractiveBrokersObservable, accountsList::String)
 end
 
 function nextValidId(ib::InteractiveBrokersObservable, orderId::Int)
-    # TODO ???
-    println("NextValidId: $orderId")
+    ib.nextValidId = orderId    
 end
 
 function tickPrice(ib::InteractiveBrokersObservable, tickerId::Int, field::String, price::Union{Float64,Nothing}, size::Union{Float64,Nothing}, attrib::InteractiveBrokers.TickAttrib)
@@ -32,7 +31,7 @@ function tickSize(ib::InteractiveBrokersObservable, tickerId::Int, field::String
     #TODO Use & dispatch
 end
 
-function tickString(ib::InteractiveBrokersObservable, tickerId::Int, tickType::String, value::String)
+function tickString(ib::InteractiveBrokersObservable, tickerId::Int, field::String, value::String)
     # ex data: 1 DELAYED_LAST_TIMESTAMP 1718409598
     mapping = ib.requestMappings[Pair(tickerId, :tickString)]
     next!(mapping[2], unix2datetime(parse(Int64,value))) # TODO Handle timezones
