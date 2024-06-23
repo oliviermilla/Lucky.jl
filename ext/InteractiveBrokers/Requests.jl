@@ -7,6 +7,11 @@
     return nothing
 end
 
+function InteractiveBrokers.reqIds(ib::InteractiveBrokersObservable)
+    f = (connection) -> InteractiveBrokers.reqIds(connection)
+    delayedReq(f, ib)
+end
+
 function InteractiveBrokers.reqMktData(ib::InteractiveBrokersObservable, reqId::Int, instr::Instrument, genericTicks::String, snapshot::Bool, regulatorySnaphsot::Bool=false, mktDataOptions::NamedTuple=(;))
     f = (connection) -> InteractiveBrokers.reqMktData(connection, reqId, InteractiveBrokers.Contract(instr), genericTicks, snapshot, regulatorySnaphsot, mktDataOptions)
     delayedReq(f, ib)
