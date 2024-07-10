@@ -46,6 +46,11 @@ using .Indicators
 export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
 export DrawdownIndicator, EMAIndicator, HighWaterMarkIndicator, PeriodicValueIndicator, RollingIndicator, SMAIndicator
 
+include("Trades.jl")
+using .Trades
+export AbstractTrade
+export Trade
+
 # ==== Rocket Dependant
 
 include("Exchanges.jl")

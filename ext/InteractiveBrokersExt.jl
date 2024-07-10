@@ -8,7 +8,7 @@ using Dates
 struct CallbackKey
     requestId::Int
     callbackSymbol::Symbol
-    tickType::InteractiveBrokers.TICK_TYPES
+    tickType::InteractiveBrokers.TickTypes.TICK_TYPES
 end
 
 struct CallbackValue
@@ -17,10 +17,10 @@ struct CallbackValue
     instrument::Lucky.Instrument
 end
 
-const CallbackMapping = Dict{CallbackKey,CallbackMapping}
+const CallbackMapping = Dict{CallbackKey,CallbackValue}
 
 mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
-    requestMappings::CallbackMapping()
+    requestMappings::CallbackMapping
     mergedCallbacks::Dict{Symbol,Rocket.Subscribable}
 
     nextValidId::Union{Missing,Int}
@@ -236,8 +236,10 @@ DELAYED_YIELD_BID = 103
 DELAYED_YIELD_ASK = 104 
 =#
 
+feedMerge(tup::Tuple{Lucky.AbstractTrade,Float64,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[2], tup[3])
+
 function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
-    requestId = 1 # TODO nextValidId(client): use delayedReq with the current body
+    requestId = nextValidId(client)
 
     InteractiveBrokers.reqMktData(client, requestId, instr, "", false)
 
@@ -245,16 +247,14 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
     tickSizeSubject = Subject(Pair)
     tickStringSubject = Subject(DateTime)
 
-    client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
 
-    # TODO Quote with size    
-    merge = (tup::Tuple{Lucky.PriceQuote,DateTime,Float64}) -> Quote(tup[1].instrument, tup[1].price, tup[2], tup[3])
-    merged = Rocket.combineLatest(tickPriceSubject, tickStringSubject, tickSizeSubject) |> Rocket.map(Lucky.PriceQuote, merge)
+    merged = Rocket.combineLatest(tickPriceSubject, tickSizeSubject, tickStringSubject) |> Rocket.map(Lucky.PriceQuote, feedMerge)
 
     # Output callback
     client.mergedCallbacks[:tick] = merged
@@ -266,13 +266,10 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
 end
 
 function nextValidId(ib::InteractiveBrokersObservable)
-    isnothing(ib.connection) && return nothing
-
     if ismissing(ib.nextValidId)
-        InteractiveBrokers.reqIds(ib)
+        ib.nextValidId = 0
     end
-
-    return ib.nextValidId
+    return ib.nextValidId += 1
 end
 
 function wrapper(client::InteractiveBrokersObservable)
