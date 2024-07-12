@@ -236,25 +236,31 @@ DELAYED_YIELD_BID = 103
 DELAYED_YIELD_ASK = 104 
 =#
 
-feedMerge(tup::Tuple{Lucky.AbstractTrade,Float64,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[2], tup[3])
+#feedMerge(tup::Tuple{Lucky.AbstractTrade,Float64,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[2], tup[3])
+feedMerge(tup::Tuple{Lucky.AbstractTrade,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[1].size, tup[2])
 
 function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
     requestId = nextValidId(client)
 
     InteractiveBrokers.reqMktData(client, requestId, instr, "", false)
 
+    # tickPrice: DELAYED_LAST: price & size.
+    # tickString: DELAYED_LAST_TIMESTAMP: value
+    # WARNING: DOCS STATE that tickSize returns the LAST_SIZE while it never does in practice. (12/07/2024)
+    # Hence all the commented code. Could be put back 
     tickPriceSubject = Subject(Lucky.Trade)
-    tickSizeSubject = Subject(Float64)
+    #tickSizeSubject = Subject(Float64)
     tickStringSubject = Subject(DateTime)
 
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
 
-    merged = Rocket.combineLatest(tickPriceSubject, tickSizeSubject, tickStringSubject) |> Rocket.map(Lucky.Trade, feedMerge)
+    #merged = Rocket.combineLatest(tickPriceSubject, tickSizeSubject, tickStringSubject) |> Rocket.map(Lucky.Trade, feedMerge)
+    merged = Rocket.combineLatest(tickPriceSubject, tickStringSubject) |> Rocket.map(Lucky.Trade, feedMerge)
     
     # Output callback
     client.mergedCallbacks[:tick] = merged
