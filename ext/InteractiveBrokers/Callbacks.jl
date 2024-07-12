@@ -31,7 +31,7 @@ function tickPrice(ib::InteractiveBrokersObservable, tickerId::Int, field::Inter
     key = CallbackKey(tickerId, :tickPrice, field)
     if haskey(ib.requestMappings, key)
         val = ib.requestMappings[key]
-        qte = Lucky.Trade(val.instrument, price)
+        qte = Lucky.Trade(val.instrument, price, size)
         next!(val.subject, qte)
     end
 end
