@@ -243,19 +243,19 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
 
     InteractiveBrokers.reqMktData(client, requestId, instr, "", false)
 
-    tickPriceSubject = Subject(Lucky.PriceQuote)
-    tickSizeSubject = Subject(Pair)
+    tickPriceSubject = Subject(Lucky.Trade)
+    tickSizeSubject = Subject(Float64)
     tickStringSubject = Subject(DateTime)
 
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
 
-    merged = Rocket.combineLatest(tickPriceSubject, tickSizeSubject, tickStringSubject) |> Rocket.map(Lucky.PriceQuote, feedMerge)
-
+    merged = Rocket.combineLatest(tickPriceSubject, tickSizeSubject, tickStringSubject) |> Rocket.map(Lucky.Trade, feedMerge)
+    
     # Output callback
     client.mergedCallbacks[:tick] = merged
 
@@ -276,9 +276,12 @@ function wrapper(client::InteractiveBrokersObservable)
     wrap = InteractiveBrokers.Wrapper(client)
 
     # Mandatory callbacks
+    # TODO Move to a list that user can override
     setproperty!(wrap, :error, error)
     setproperty!(wrap, :managedAccounts, managedAccounts)
+    setproperty!(wrap, :marketDataType, marketDataType)
     setproperty!(wrap, :nextValidId, nextValidId)
+    setproperty!(wrap, :tickReqParams, tickReqParams)
 
     for (key, val) in client.requestMappings
         setproperty!(wrap, key.callbackSymbol, val.callbackFunction)
