@@ -1,7 +1,7 @@
 name = "Lucky"
 uuid = "091b6c57-2055-4743-a613-81d9bc5174d5"
 authors = ["Olivier Milla <olivier.milla@hey.com>"]
-version = "0.4.0"
+version = "0.5.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -12,6 +12,7 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 [weakdeps]
 DydxV3 = "81fc79e4-7aed-40c1-9951-444e465e3245"
 InteractiveBrokers = "f310f2d2-a263-11e8-3998-47bd686f18f7"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
@@ -25,7 +26,7 @@ TimeSeriesExt = "TimeSeries"
 
 [compat]
 DydxV3 = "0.7"
-InteractiveBrokers = "0.23, 0.24"
+InteractiveBrokers = "0.27"
 MarketData = "0.14"
 Rocket = "1.7.2"
 Statistics = "1"
@@ -37,4 +38,14 @@ BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "BenchmarkTools", "DydxV3", "InteractiveBrokers", "MarketData", "Random", "TimeSeries"]
+test = [
+    "Test",
+    "BenchmarkTools",
+    "DydxV3",
+    "InteractiveBrokers",
+    "Logging",
+    "MarketData",
+    "Random",
+    "TimeSeries",
+]
+
