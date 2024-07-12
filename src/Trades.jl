@@ -11,11 +11,12 @@ abstract type AbstractTrade <: AbstractFill end
 
 struct Trade{I,S,D} <: AbstractTrade
     instrument::I
+    price::Float64
     size::S
     timestamp::D
 end
 
-Trade(instrument::Instrument, size::Number) = Trade(instrument, size, missing)
+Trade(instrument::Instrument, price::Float64, size::Number) = Trade(instrument, price, size, missing)
 
 Units.currency(t::Trade{I,S,D}) where {I<:Instrument,S,D} = Units.currency(t.instrument)
 
