@@ -7,6 +7,13 @@
     return nothing
 end
 
+function nextValidId(ib::InteractiveBrokersObservable)
+    if ismissing(ib.nextValidId)
+        ib.nextValidId = 0
+    end
+    return ib.nextValidId += 1
+end
+
 function InteractiveBrokers.reqIds(ib::InteractiveBrokersObservable)
     f = (connection) -> InteractiveBrokers.reqIds(connection)
     delayedReq(f, ib)

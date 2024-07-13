@@ -236,7 +236,7 @@ DELAYED_YIELD_BID = 103
 DELAYED_YIELD_ASK = 104 
 =#
 
-#feedMerge(tup::Tuple{Lucky.AbstractTrade,Float64,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[2], tup[3])
+# combine incoming prices, sizes & timestamps into a Trade structure
 feedMerge(tup::Tuple{Lucky.AbstractTrade,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[1].size, tup[2])
 
 function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
@@ -254,8 +254,8 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
 
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
 
@@ -269,13 +269,6 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
     # subscribe!(client.obs, tickStringSubject)
 
     return merged
-end
-
-function nextValidId(ib::InteractiveBrokersObservable)
-    if ismissing(ib.nextValidId)
-        ib.nextValidId = 0
-    end
-    return ib.nextValidId += 1
 end
 
 function wrapper(client::InteractiveBrokersObservable)
