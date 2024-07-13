@@ -5,9 +5,9 @@
 
 Lucky is a trading framework for Julia designed to 
 
-- (very) rapidly test and deploy trading statregies with next to zero code change between the two.
-- run very fast by leveraging Julia's multiple dispatch paradigm and [Rocket.jl](https://github.com/ReactiveBayes/Rocket.jl) as its **asynchronous** and **reactive** core.
-- being super simple to start with and modular to tailor and extend to different needs.
+- rapidly test and deploy trading statregies with next to zero code change between the two.
+- run fast by leveraging Julia's multiple dispatch paradigm and [Rocket.jl](https://github.com/ReactiveBayes/Rocket.jl) as its **asynchronous** and **reactive** core.
+- being super simple to start with although remaining modular to tailor and extend to different needs.
 - accomodate different kind of strategies, data or experiements (market making, random process simulation, etc.) leveraging Julia's powerful math libraries ecosystem.
 
 ## Example code
@@ -16,19 +16,16 @@ A documented and working example is available in the examples folder [here](http
 
 ## Integrations
 
-Lucky.jl is designed to be extendable to any API data source (including brokers) and/or data types.
+Lucky.jl is designed to be extendable to any API data source (brokers, exchanges, etc.) and/or data types.
 
 At the day of writing, the libray integrates the following integrations:
 
 | Library                                                      | Type                                                              | Comments                                       |
 |--------------------------------------------------------------|-------------------------------------------------------------------|------------------------------------------------|
-| [MarketData.jl](https://github.com/JuliaQuant/MarketData.jl) | Historical financial time series from Yahoo, FRED, ONS.           | - Yahoo :heavy_check_mark:| 
+| [MarketData.jl](https://github.com/JuliaQuant/MarketData.jl) | Historical financial time series from Yahoo, FRED, ONS.           | :heavy_check_mark:| 
 | [TimeSeries.jl](https://github.com/JuliaStats/TimeSeries.jl) | Lightweight framework for working with time series data in Julia. | :heavy_check_mark:                                       |
-| [InteractiveBrokers.jl](https://github.com/oliviermilla/InteractiveBrokers.jl)                   | Pure Julia API to Interactive Brokers                             | :heavy_check_mark:  Partial                        |
+| [InteractiveBrokers.jl](https://github.com/oliviermilla/InteractiveBrokers.jl)                   | Pure Julia API to Interactive Brokers                             | :heavy_check_mark:  (partial)                        |
 | Random                                                       | Standard Julia Random Library                                     | :heavy_check_mark:                                       |
-
-## Data Types
-The library provides interface to handle Open High Low Close data (if that's what you're into).
 
 **The library is in development. Contact if you'd like to help.**
 
