@@ -101,6 +101,18 @@ end
 
 #= 
 
+{
+    :reqMktData => {    
+    }
+}
+defaultMapping = {
+    :feed, BID_SIZE, tickPrice, Union{Float64,Nothing}
+}
+
+reqMapping = {
+    1 => [:BTC, requests, provided]
+}
+
 Actually, Lucky.feed() should specify what is being fed. Orderbook data? trade data? stats? others?
 So the idea is to map request options to type of feed and return observables for each type.
 An idea could be to create generic data types (ex: orderbook, trade, etc.) and map to that. Use polygon API for instance.
@@ -118,8 +130,8 @@ ASK = 2
 ASK_SIZE = 3
 
 Trade fields
-LAST = feed()
-LAST_SIZE = feed()
+LAST = 4 # feed()
+LAST_SIZE = 5 # feed()
 
 Today stats
 HIGH = 6
@@ -174,7 +186,7 @@ OPEN_EFP_COMPUTATION = 41
 HIGH_EFP_COMPUTATION = 42
 LOW_EFP_COMPUTATION = 43
 CLOSE_EFP_COMPUTATION = 44
-LAST_TIMESTAMP = feed()
+LAST_TIMESTAMP = 45 # feed()
 SHORTABLE = 46
 FUNDAMENTAL_RATIOS = 47
 RT_VOLUME = 48
@@ -197,10 +209,10 @@ SHORT_TERM_VOLUME_5_MIN = 64
 SHORT_TERM_VOLUME_10_MIN = 65
 DELAYED_BID = 66
 DELAYED_ASK = 67
-DELAYED_LAST = feed()
+DELAYED_LAST = 68 # feed()
 DELAYED_BID_SIZE = 69
 DELAYED_ASK_SIZE = 70
-DELAYED_LAST_SIZE = feed()
+DELAYED_LAST_SIZE = 71 # feed()
 DELAYED_HIGH = 72
 DELAYED_LOW = 73
 DELAYED_VOLUME = 74
@@ -217,7 +229,7 @@ LAST_EXCH = 84
 LAST_REG_TIME = 85
 FUTURES_OPEN_INTEREST = 86
 AVG_OPT_VOLUME = 87
-DELAYED_LAST_TIMESTAMP = feed()
+DELAYED_LAST_TIMESTAMP = 88 feed()
 SHORTABLE_SHARES = 89
 DELAYED_HALTED = 90
 REUTERS_2_MUTUAL_FUNDS = 91
@@ -247,15 +259,15 @@ function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
     # tickPrice: DELAYED_LAST: price & size.
     # tickString: DELAYED_LAST_TIMESTAMP: value
     # WARNING: DOCS STATE that tickSize returns the LAST_SIZE while it never does in practice. (12/07/2024)
-    # Hence all the commented code. Could be put back 
+    # Hence all the commented code.
     tickPriceSubject = Subject(Lucky.Trade)
     #tickSizeSubject = Subject(Float64)
     tickStringSubject = Subject(DateTime)
 
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
+    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
     client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
 
