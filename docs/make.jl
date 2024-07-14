@@ -5,6 +5,7 @@ makedocs(
     sitename="Lucky.jl",
     format=Documenter.HTML(),
     modules=[Lucky],
+    clean=true,
     pages=[
         "Getting Started" => "getting-started.md",
         # "Strategies" => "strategies.md",
@@ -12,6 +13,9 @@ makedocs(
         # "Instruments" => "instruments/about.md",
         # "Exchanges" => "exchanges/about.md",
         # "Blotters" => "blotters/about.md",
+        "Units" => ["units/about.md",
+            "Currencies" => "units/currencies.md"
+        ],
         "Glossary" => "glossary.md"
     ]
 )
