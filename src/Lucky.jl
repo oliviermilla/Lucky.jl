@@ -2,15 +2,17 @@ module Lucky
 
 using Rocket
 
-# ==== Financial Types
+# ==== Units
 include("Units.jl")
 include("units/Percentages.jl")
 include("units/Timestamps.jl")
 include("units/Currencies.jl")
 
+# ==== Bars
 include("Ohlcs.jl")
 
-# include("Instruments.jl")
+# ==== Instruments
+include("Instruments.jl")
 # include("instruments/Cash.jl")
 # include("instruments/Stocks.jl")
 # #using .Instruments

@@ -13,11 +13,13 @@ makedocs(
         "Getting Started" => "getting-started.md",
         # "Strategies" => "strategies.md",
         # "Integrations" => "integrations/about.md",
-        # "Instruments" => "instruments/about.md",
+        "Instruments" => [
+            "About" => "instruments/instruments.md"
+        ],
         # "Exchanges" => "exchanges/about.md",
         # "Blotters" => "blotters/about.md",
         "Units" => [
-            "About" => "units.md",
+            "About" => "units/units.md",
             "Currencies" => "units/currencies.md"
         ],
         "Ohlc" => "ohlcs.md",

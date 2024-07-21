@@ -1,17 +1,14 @@
-module Instruments
+"""
+    Instrument
 
-export Instrument, InstrumentType
-import Lucky.Units as Units
+Abstract Instrument type.
 
+An Instrument represents a contract that can be traded.
+
+"""
 abstract type Instrument end
 
-# InstrumentType(I::Type{<:Instrument}, params...) = error("You probably forgot to implement InstrumentType($(I), $(params...))")
 InstrumentType(::I) where {I<:Instrument} = I
 
-Units.currency(I::Type{<:Instrument}) = error("You probably forgot to implement currency(::$(I)")
-Units.currency(i::I) where {I<:Instrument} = error("You probably forgot to implement currency(::$(I)")
-
-include("instruments/Cash.jl")
-include("instruments/Stocks.jl")
-
-end
+currency(I::Type{<:Instrument}) = error("You probably forgot to implement currency(::$(I)")
+currency(i::I) where {I<:Instrument} = error("You probably forgot to implement currency(::$(I)")
