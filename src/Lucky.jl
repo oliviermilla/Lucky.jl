@@ -1,8 +1,10 @@
 module Lucky
-
+using Dates
 using Rocket
+using UUIDs # Used by FakeExchange
 
 # ==== Units
+include("Constants.jl")
 include("Units.jl")
 include("units/Percentages.jl")
 include("units/Timestamps.jl")
@@ -13,68 +15,33 @@ include("Ohlcs.jl")
 
 # ==== Instruments
 include("Instruments.jl")
-# include("instruments/Cash.jl")
-# include("instruments/Stocks.jl")
-# #using .Instruments
-# #export Instrument, InstrumentType
-# #export Cash, Stock
+include("instruments/Cash.jl")
+include("instruments/Stocks.jl")
 
-# include("Quotes.jl")
-# using .Quotes
-# export AbstractQuote, Quote, QuoteType
-# export timestamp
+# ==== Other Data Types
+include("Quotes.jl")
+include("Positions.jl")
+include("Orders.jl")
+include("Fills.jl")
+include("Trades.jl")
+include("Indicators.jl")
 
-# include("Positions.jl")
-# using .Positions
-# export Position, PositionType
+# ==== Services
+include("Services.jl")
+include("Blotters.jl")
+include("blotters/InMemoryBlotters.jl")
+include("Exchanges.jl")
+include("exchanges/FakeExchanges.jl")
 
-# include("Orders.jl")
-# using .Orders
-# export AbstractOrder, OrderType
-# export LimitOrder, MarketOrder
+include("Strategies.jl")
 
-# include("Fills.jl")
-# using .Fills
-# export AbstractFill, FillType
-# export Fill
+# === Operators
 
-# include("Indicators.jl")
-# using .Indicators
-# export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
-# export DrawdownIndicator, EMAIndicator, HighWaterMarkIndicator, PeriodicValueIndicator, RollingIndicator, SMAIndicator
-
-# include("Trades.jl")
-# using .Trades
-# export AbstractTrade
-# export Trade
-
-# # ==== Rocket Dependant
-
-# include("Exchanges.jl")
-# using .Exchanges
-# export AbstractExchange, FakeExchange
-
-# include("Blotters.jl")
-# using .Blotters
-# export AbstractBlotter
-# export InMemoryBlotter
-
-# include("Operators.jl")
-# using .Operators
-# export drawdown, ema, highwatermark, ohlc, rolling, sma
-
-# include("Strategies.jl")
-# using .Strategies
-# export AbstractStrategy
-
-# # === Others
-
-# include("observables/Feeders.jl")
-# using .Feeders
-# # Do not export feed (too generic name)
-
-# include("Services.jl")
-# using .Services
-# # Do not export service (too generic name)
+include("operators/ohlc.jl")
+include("operators/rolling.jl")
+include("operators/ema.jl") # Must be after rolling
+include("operators/sma.jl") # Must be after rolling
+include("operators/highwatermark.jl")
+include("operators/drawdown.jl") # Must be after HighWaterMark
 
 end # module Lucky

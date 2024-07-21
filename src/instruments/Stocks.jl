@@ -1,5 +1,10 @@
 export Stock
 
+"""
+    Stock
+
+Instrument representing Stock.
+"""
 struct Stock{S,C} <: Instrument end
 
 Stock(S::Symbol, C::Type{<:Currency}) = Stock{S,C}()

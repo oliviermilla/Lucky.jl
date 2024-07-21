@@ -1,4 +1,3 @@
-using Lucky.Indicators
 @testset "rolling()" begin
     op = rolling(3)
     @testset "Interface" begin

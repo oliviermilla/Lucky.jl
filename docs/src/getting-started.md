@@ -37,15 +37,16 @@ As a picture, consider that you'd like to have 3 strategies, with each being ded
 
 Which means that such a design requires lots of wiring as strategy 2 needs to know your current position, while 3 will likey need to track the fills and positions.
 
-Whatever it is you wish to build, the concepts remain where:
+Whatever you wish to build, the concepts remain where:
 
 - **Operators** transform data.
 - **Strategies** make decisions.
 - **Exchanges** match orders.
 - **Blotters** do the record keeping.
 
-To do all this, Lucky leverages the Rocket library under the hood. 
-Hence, familiarity with reactive programming concepts is nice (though not required).
+To do all this, Lucky leverages the Rocket library under the hood, allowing fast reactive processing.
+
+Familiarity with reactive programming concepts helps (though not required).
 You can refer to Rocket's documentation for more information [here](https://reactivebayes.github.io/Rocket.jl/stable/).
 
 That's all we need to know for now.

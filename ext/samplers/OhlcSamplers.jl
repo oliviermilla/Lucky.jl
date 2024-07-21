@@ -1,9 +1,3 @@
-module OhlcSamplers
-
-using Lucky.Ohlcs
-using Dates
-using Random
-
 function Random.rand(rng::Random.AbstractRNG, ::Type{Ohlc{DateTime}})
     return Ohlc{DateTime}(
         rand(rng, 100:0.1:110),
@@ -45,5 +39,3 @@ function Random.rand(rng::AbstractRNG, type::Type{Ohlc{T}}, period::Dates.Period
 end
 
 Random.rand(d::Type{Ohlc{T}}, period::Dates.Period, n::Int) where {T} = rand(Random.default_rng(), d, period, n)
-
-end

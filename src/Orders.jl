@@ -1,11 +1,6 @@
-module Orders
-
-export AbstractOrder, OrderType
+export AbstractOrder
 export LimitOrder, MarketOrder
-
-using Lucky.Constants
-using Lucky.Instruments
-import Lucky.Units as Units
+export OrderType
 
 abstract type AbstractOrder end
 
@@ -22,8 +17,5 @@ struct LimitOrder{I,S} <: AbstractOrder
     limit::Float64
 end
 
-Units.currency(o::AbstractOrder) = Units.currency(o.instrument)
-Units.currency(o::Type{<:MarketOrder{I,S}}) where {I,S} = Units.currency(I)
-Units.currency(o::Type{<:LimitOrder{I,S}}) where {I,S} = Units.currency(I)
-
-end
+currency(::Type{<:MarketOrder{I,S}}) where {I,S} = currency(I)
+currency(::Type{<:LimitOrder{I,S}}) where {I,S} = currency(I)

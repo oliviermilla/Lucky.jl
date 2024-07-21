@@ -43,10 +43,10 @@
         below = LimitOrder(instr, 1.0, ohlc.low - 1)
         inside = LimitOrder(instr, 1.0, ohlc.open)
 
-        @test Lucky.Exchanges.FakeExchanges.match(above, Quote(instr,ohlc)) === nothing
-        @test Lucky.Exchanges.FakeExchanges.match(below, Quote(instr, ohlc)) === nothing
+        @test Lucky.FakeExchanges.match(above, Quote(instr,ohlc)) === nothing
+        @test Lucky.FakeExchanges.match(below, Quote(instr, ohlc)) === nothing
 
-        pos = Lucky.Exchanges.FakeExchanges.match(inside, Quote(instr, ohlc))
+        pos = Lucky.FakeExchanges.match(inside, Quote(instr, ohlc))
                                 
         @test pos isa Fill
         @test (pos.id isa String) && length(pos.id) > 0

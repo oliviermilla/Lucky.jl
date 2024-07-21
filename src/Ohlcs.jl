@@ -1,6 +1,5 @@
-import Dates
-
 export Ohlc
+export gap, ohlcpart
 
 """
     Ohlc(open::Float64, high::Float64, low::Float64, close::Float64, timestamp::T) where {T}
@@ -31,10 +30,9 @@ end
 @inline ohlcpart(ohlc::Ohlc, ::Val{bottom}) = [ohlc.low, min(ohlc.open, ohlc.close)]
 @inline ohlcpart(ohlc::Ohlc, part::OHLC_PART) = ohlcpart(ohlc, Val(part))
 
-@enum GAP up down
 @inline function gap(ohlc::Ohlc, ref::Ohlc)
-    ohlc.low > ref.high && return (up, [ref.high, ohlc.low])
-    ohlc.high < ref.low && return (down, [ohlc.high, ref.low])
+    ohlc.low > ref.high && return (Lucky.up, [ref.high, ohlc.low])
+    ohlc.high < ref.low && return (Lucky.down, [ohlc.high, ref.low])
     return nothing
 end
 

@@ -1,18 +1,4 @@
-module FakeExchanges
-
-export FakeExchange, FakePosition
-
-using Lucky.Constants
-using Lucky.Exchanges
-using Lucky.Fills
-using Lucky.Instruments
-using Lucky.Orders
-using Lucky.Quotes
-using Lucky.Ohlcs
-
-using Rocket
-using Dates
-using UUIDs
+export exchange
 
 struct FakeExchange <: AbstractExchange
     pendingOrders::Dict{Type{<:Instrument},Vector{AbstractOrder}}
@@ -78,5 +64,3 @@ end
 fillUUID() = string(uuid5(uuid4(), "FakeExchange"))
 
 fee(ord::AbstractOrder, price::Number)= zero(price)
-
-end

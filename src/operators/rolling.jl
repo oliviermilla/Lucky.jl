@@ -1,5 +1,10 @@
 export rolling
 
+"""
+    rolling(n::Int)
+
+    Returns an array of the last `n` values received.
+"""
 rolling(n::Int) = RollingOperator(n)
 
 struct RollingOperator <: InferableOperator

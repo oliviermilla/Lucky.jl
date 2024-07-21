@@ -1,4 +1,4 @@
-# [OHLC](@id ohlcs)
+# [Ohlc](@id ohlcs)
 
 ```@docs
     Ohlc

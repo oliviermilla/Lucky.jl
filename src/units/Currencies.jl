@@ -1,5 +1,6 @@
 export Currency
 export symbol, currency
+export CurrencyType
 
 """
     Currency
@@ -34,6 +35,12 @@ CurrencyType(s::AbstractString) = CurrencyType(Symbol(s))
 
 symbol(::Type{Currency{S}}) where {S} = S    
 
+"""
+    currency
+
+    Returns the currency of the object.    
+"""
+currency(o) = error("You probably forgot to implement currency(::$(o)")
 currency(::Type{C}) where {C<:Currency} = C
 
 Base.show(io::IO, ::Type{Currency{S}}) where {S} = print(io, "$(S)")

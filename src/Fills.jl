@@ -1,12 +1,6 @@
-module Fills
-
-export AbstractFill, FillType
+export AbstractFill
 export Fill
-
-using Lucky.Orders
-import Lucky.Units as Units
-
-using Dates
+export FillType
 
 abstract type AbstractFill end
 
@@ -21,6 +15,4 @@ struct Fill{O,S,D} <: AbstractFill
     timestamp::D
 end
 
-Units.currency(::Fill{O,S,D}) where {O<:AbstractOrder,S,D} = Units.currency(O)
-
-end
+currency(::Fill{O,S,D}) where {O<:AbstractOrder,S,D} = currency(O)
