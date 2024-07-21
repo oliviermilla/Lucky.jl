@@ -1,83 +1,78 @@
 module Lucky
 
-# ==== Constants & Utils
-include("Constants.jl")
-using .Constants
-export ORDER_SIDE
+using Rocket
 
-include("Utils.jl")
-
-# ==== Financial types
+# ==== Financial Types
 include("Units.jl")
-using .Units
-export Unit, UnitType, Currency, CurrencyType, TimestampType
-export symbol, currency
+include("units/Percentages.jl")
+include("units/Timestamps.jl")
+include("units/Currencies.jl")
 
 include("Ohlcs.jl")
-using .Ohlcs
-export Ohlc
 
-include("Instruments.jl")
-using .Instruments
-export Instrument, InstrumentType
-export Cash, Stock
+# include("Instruments.jl")
+# include("instruments/Cash.jl")
+# include("instruments/Stocks.jl")
+# #using .Instruments
+# #export Instrument, InstrumentType
+# #export Cash, Stock
 
-include("Quotes.jl")
-using .Quotes
-export AbstractQuote, Quote, QuoteType
-export timestamp
+# include("Quotes.jl")
+# using .Quotes
+# export AbstractQuote, Quote, QuoteType
+# export timestamp
 
-include("Positions.jl")
-using .Positions
-export Position, PositionType
+# include("Positions.jl")
+# using .Positions
+# export Position, PositionType
 
-include("Orders.jl")
-using .Orders
-export AbstractOrder, OrderType
-export LimitOrder, MarketOrder
+# include("Orders.jl")
+# using .Orders
+# export AbstractOrder, OrderType
+# export LimitOrder, MarketOrder
 
-include("Fills.jl")
-using .Fills
-export AbstractFill, FillType
-export Fill
+# include("Fills.jl")
+# using .Fills
+# export AbstractFill, FillType
+# export Fill
 
-include("Indicators.jl")
-using .Indicators
-export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
-export DrawdownIndicator, EMAIndicator, HighWaterMarkIndicator, PeriodicValueIndicator, RollingIndicator, SMAIndicator
+# include("Indicators.jl")
+# using .Indicators
+# export AbstractIndicator, IterableIndicator, ValueIndicator, IndicatorType
+# export DrawdownIndicator, EMAIndicator, HighWaterMarkIndicator, PeriodicValueIndicator, RollingIndicator, SMAIndicator
 
-include("Trades.jl")
-using .Trades
-export AbstractTrade
-export Trade
+# include("Trades.jl")
+# using .Trades
+# export AbstractTrade
+# export Trade
 
-# ==== Rocket Dependant
+# # ==== Rocket Dependant
 
-include("Exchanges.jl")
-using .Exchanges
-export AbstractExchange, FakeExchange
+# include("Exchanges.jl")
+# using .Exchanges
+# export AbstractExchange, FakeExchange
 
-include("Blotters.jl")
-using .Blotters
-export AbstractBlotter
-export InMemoryBlotter
+# include("Blotters.jl")
+# using .Blotters
+# export AbstractBlotter
+# export InMemoryBlotter
 
-include("Operators.jl")
-using .Operators
-export drawdown, ema, highwatermark, ohlc, rolling, sma
+# include("Operators.jl")
+# using .Operators
+# export drawdown, ema, highwatermark, ohlc, rolling, sma
 
-include("Strategies.jl")
-using .Strategies
-export AbstractStrategy
+# include("Strategies.jl")
+# using .Strategies
+# export AbstractStrategy
 
-# === Others
+# # === Others
 
-include("observables/Feeders.jl")
-using .Feeders
-# Do not export feed (too generic name)
+# include("observables/Feeders.jl")
+# using .Feeders
+# # Do not export feed (too generic name)
 
-include("Services.jl")
-using .Services
-# Do not export service (too generic name)
+# include("Services.jl")
+# using .Services
+# # Do not export service (too generic name)
 
 end # module Lucky

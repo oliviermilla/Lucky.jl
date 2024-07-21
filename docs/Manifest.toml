@@ -2,7 +2,7 @@
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "927cb39edd0c970e6b8bf96fb35511de84597f6a"
+project_hash = "ec71c6b9f07965ad5ee1f98e105f63a9bcec4f34"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -162,7 +162,7 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[deps.Lucky]]
 deps = ["Dates", "Rocket", "Statistics", "UUIDs"]
-path = "/home/methe/.julia/dev/Lucky"
+path = "/home/methe/Lucky"
 uuid = "091b6c57-2055-4743-a613-81d9bc5174d5"
 version = "0.5.0"
 
@@ -321,9 +321,9 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TranscodingStreams]]
-git-tree-sha1 = "60df3f8126263c0d6b357b9a1017bb94f53e3582"
+git-tree-sha1 = "96612ac5365777520c3c5396314c8cf7408f436a"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.11.0"
+version = "0.11.1"
 weakdeps = ["Random", "Test"]
 
     [deps.TranscodingStreams.extensions]

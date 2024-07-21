@@ -1,5 +1,5 @@
 # [Currencies](@id currencies)
 
-```@autodocs
-    Modules = [Units.Currencies]    
+```@docs
+    Currency
 ```

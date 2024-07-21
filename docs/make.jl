@@ -1,10 +1,13 @@
 using Documenter
 using Lucky
 
+DocMeta.setdocmeta!(Lucky, :DocTestSetup, :(using Lucky); recursive=true)
+
 makedocs(
     sitename="Lucky.jl",
     format=Documenter.HTML(),
     modules=[Lucky],
+    doctest=true,
     clean=true,
     pages=[
         "Getting Started" => "getting-started.md",
@@ -13,9 +16,11 @@ makedocs(
         # "Instruments" => "instruments/about.md",
         # "Exchanges" => "exchanges/about.md",
         # "Blotters" => "blotters/about.md",
-        "Units" => ["units/about.md",
+        "Units" => [
+            "About" => "units.md",
             "Currencies" => "units/currencies.md"
         ],
+        "Ohlc" => "ohlcs.md",
         "Glossary" => "glossary.md"
     ]
 )

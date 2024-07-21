@@ -1,22 +1,25 @@
-module Currencies
-
-export Currency, CurrencyType
+export Currency
 export symbol, currency
-
-using Lucky.Units
 
 """
     Currency
 
-A Currency is a Unit.
-Should not be confused with Cash, which represents a currency in 
+A Currency is type of Unit.
+It should not be confused with Cash, which represents the amount of a certain Currency.
 
 Currencies are implemented as a singelton.
 
 # Examples
 
+```jldoctest
+c = Currency(:USD)
 
-See also: [`Units`](@ref), [`Cash`](@ref)
+# output
+
+USD()
+```
+
+See also: [`Unit`](@ref units)
 """
 struct Currency{S} <: Unit end
 
@@ -29,10 +32,10 @@ CurrencyType(C::Type{<:Currency}) = C
 CurrencyType(s::Symbol) = CurrencyType(Currency{s})
 CurrencyType(s::AbstractString) = CurrencyType(Symbol(s))
 
-symbol(::Type{Currency{S}}) where {S} = S
+symbol(::Type{Currency{S}}) where {S} = S    
+
 currency(::Type{C}) where {C<:Currency} = C
 
 Base.show(io::IO, ::Type{Currency{S}}) where {S} = print(io, "$(S)")
 
-Base.convert(String, ::Type{C}) where {S,C<:Currency{S}} = String(S)
-end
+Base.convert(::Type{String}, ::Type{C}) where {S,C<:Currency{S}} = String(S)
