@@ -5,7 +5,8 @@
         @test Cash("USD") isa Cash{USD}
     end
     @testset "Interface" begin
-        @test InstrumentType(Cash(:USD)) === Cash{USD}
-        @test currency(Cash(:USD)) == USD
+        instr = Cash(:USD)
+        @test InstrumentType(instr) === Cash{USD}
+        @test currency(instr) == USD
     end
 end

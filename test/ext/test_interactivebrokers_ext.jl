@@ -10,7 +10,7 @@ using InteractiveBrokers
 
             stock = Stock(:AAPL, :USD)
 
-            qt = Lucky.feed(client, stock) # reqMktData should return a Subscribable
+            qt = Lucky.trades(client, stock) # reqMktData should return a Subscribable
             @test Rocket.as_subscribable(qt) isa SimpleSubscribableTrait # or ScheduledSubscribableTrait                        
             
             # Test wrapper

@@ -40,7 +40,7 @@ symbol(::Type{Currency{S}}) where {S} = S
 
     Returns the currency of the object.    
 """
-currency(o) = error("You probably forgot to implement currency(::$(o)")
+currency(o::Any) = error("You probably forgot to implement currency(::$(o)")
 currency(::Type{C}) where {C<:Currency} = C
 
 Base.show(io::IO, ::Type{Currency{S}}) where {S} = print(io, "$(S)")

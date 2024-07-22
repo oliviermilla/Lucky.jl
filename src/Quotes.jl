@@ -1,12 +1,14 @@
 export AbstractQuote, Quote
 export QuoteType
-
+export quotes
 """
     AbstractQuote
 
 Abstract Quote type.
 """
 abstract type AbstractQuote end
+
+function quotes end
 
 currency(q::AbstractQuote) = currency(q.instrument)
 QuoteType(I::Type{<:Instrument}, params...) = error("You probably forgot to implement QuoteType(::$(I), $(params...))")

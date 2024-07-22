@@ -251,7 +251,7 @@ DELAYED_YIELD_ASK = 104
 # combine incoming prices, sizes & timestamps into a Trade structure
 feedMerge(tup::Tuple{Lucky.AbstractTrade,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[1].size, tup[2])
 
-function Lucky.feed(client::InteractiveBrokersObservable, instr::Instrument)
+function Lucky.trades(client::InteractiveBrokersObservable, instr::Instrument)
     requestId = nextValidId(client)
 
     InteractiveBrokers.reqMktData(client, requestId, instr, "", false)

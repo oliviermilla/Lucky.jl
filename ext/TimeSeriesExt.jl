@@ -23,4 +23,9 @@ end
 
 Rocket.from(data::TimeSeries.TimeArray) = Rocket.from(Vector{Ohlc}(data))
 
+function Lucky.quotes(instr::Instrument, data::TimeSeries.TimeArray)
+    instrType = InstrumenType(instr)
+    rightType = QuoteType(instrType, Ohlc{Date})
+    return Rocket.from(data) |> map(rightType, ohlc -> Quote(instr, ohlc))
+end
 end

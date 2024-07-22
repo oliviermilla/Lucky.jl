@@ -17,5 +17,7 @@ struct LimitOrder{I,S} <: AbstractOrder
     limit::Float64
 end
 
-currency(::Type{<:MarketOrder{I,S}}) where {I,S} = currency(I)
-currency(::Type{<:LimitOrder{I,S}}) where {I,S} = currency(I)
+currency(::MarketOrder{I,S}) where {I<:Instrument,S<:Number} = currency(I)
+currency(::LimitOrder{I,S}) where {I<:Instrument,S<:Number} = currency(I)
+currency(::Type{<:MarketOrder{I,S}}) where {I<:Instrument,S<:Number} = currency(I)
+currency(::Type{<:LimitOrder{I,S}}) where {I<:Instrument,S<:Number} = currency(I)

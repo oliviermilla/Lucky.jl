@@ -17,7 +17,11 @@ with_logger(debugLogger) do
 
     include("test_units.jl")
     include("test_currencies.jl")
+    
     include("test_instruments.jl")
+    include("instruments/test_cash.jl")
+    include("instruments/test_stocks.jl")
+    
     include("test_quotes.jl")
     include("test_positions.jl")
     include("test_orders.jl")
@@ -36,7 +40,7 @@ with_logger(debugLogger) do
     include("blotters/test_in_memory_blotters.jl")
 
     # Extensions
-    include("ext/test_timeseries.jl")
+    include("ext/test_timeseries_ext.jl")
     include("ext/test_dydxv3_ohlc_operators.jl")
     include("ext/test_interactivebrokers_ext.jl")
     # include("ext/test_interactivebrokers_ext_live.jl")

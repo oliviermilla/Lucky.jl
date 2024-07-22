@@ -11,11 +11,11 @@
         order = MarketOrder(instr, rand(-10:0.1:10))
         orders = Rocket.of(order) |> multicast(ordersSubject)
 
-        fills = Subject(Lucky.Fill)
-        exchange = FakeExchange(fills)
+        fills = Subject(Fill)
+        ex = exchange(:fake, fills)
 
-        subscribe!(quotesSubject, exchange)
-        subscribe!(ordersSubject, exchange)
+        subscribe!(quotesSubject, ex)
+        subscribe!(ordersSubject, ex)
 
         function testNextMarketOrder(pos::Fill)
             @test (pos.id isa String) && length(pos.id) > 0
@@ -23,7 +23,7 @@
             @test pos.size == order.size
             @test pos.price == ohlc.open
             @test pos.timestamp == ohlc.timestamp
-            @test length(exchange.pendingOrders) == 0
+            @test length(ex.pendingOrders) == 0
         end
 
         function testCompleteMarketOrder()
@@ -43,10 +43,10 @@
         below = LimitOrder(instr, 1.0, ohlc.low - 1)
         inside = LimitOrder(instr, 1.0, ohlc.open)
 
-        @test Lucky.FakeExchanges.match(above, Quote(instr,ohlc)) === nothing
-        @test Lucky.FakeExchanges.match(below, Quote(instr, ohlc)) === nothing
+        @test Lucky.match(above, Quote(instr,ohlc)) === nothing
+        @test Lucky.match(below, Quote(instr, ohlc)) === nothing
 
-        pos = Lucky.FakeExchanges.match(inside, Quote(instr, ohlc))
+        pos = Lucky.match(inside, Quote(instr, ohlc))
                                 
         @test pos isa Fill
         @test (pos.id isa String) && length(pos.id) > 0

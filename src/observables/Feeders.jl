@@ -1,5 +1,3 @@
-export feed
+export trades
 
-function feed end
-
-feed(x::Any) = error("You probably forgot to implement feed($(x))")
+function trades end

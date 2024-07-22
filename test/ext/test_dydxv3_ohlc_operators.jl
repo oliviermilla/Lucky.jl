@@ -1,9 +1,5 @@
 @testset "DydxV3Ext" begin
-    using Lucky.Operators
-
     using DydxV3
-    using Rocket
-    using Dates
 
     mutable struct OhlcOperatorTestActor <: Actor{Ohlc}
         trades::Vector{DydxV3.Trade}

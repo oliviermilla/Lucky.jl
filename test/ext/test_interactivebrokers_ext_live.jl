@@ -8,7 +8,7 @@ InteractiveBrokers.reqMarketDataType(client, InteractiveBrokers.DELAYED)
 
 stock = Stock(:AAPL, :USD)
 
-qt = Lucky.feed(client, stock)
+qt = Lucky.trades(client, stock)
 
 # accounts = Lucky.accounts(client)
 

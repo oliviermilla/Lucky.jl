@@ -28,10 +28,12 @@ include("Indicators.jl")
 
 # ==== Services
 include("Services.jl")
+include("observables/Feeders.jl")
 include("Blotters.jl")
 include("blotters/InMemoryBlotters.jl")
+include("OrderBooks.jl")
 include("Exchanges.jl")
-include("exchanges/FakeExchanges.jl")
+include("exchanges/FakeExchanges.jl") # Must be after OrderBooks
 
 include("Strategies.jl")
 
