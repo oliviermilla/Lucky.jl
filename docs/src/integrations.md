@@ -39,10 +39,10 @@ FakeExchange is part of Lucky. No extra package is required.
 
 Add [InteractiveBrokers](https://github.com/oliviermilla/InteractiveBrokers.jl) to your `Project.toml` file.
 
-```example
+```@example
     using Lucky
     using InteractiveBrokers
-    conn = service(:interactivebrokers) # Client holding the connection and settings.
+    client = service(:interactivebrokers) # Client holding the connection and settings.
     
     InteractiveBrokers.reqMarketDataType(client, InteractiveBrokers.DELAYED) # Specify the data type you wish to stream.
 
@@ -56,6 +56,9 @@ Add [InteractiveBrokers](https://github.com/oliviermilla/InteractiveBrokers.jl) 
 Add [MarketData](https://github.com/JuliaQuant/MarketData.jl) to your `Project.toml` file. Note that the package requires the `TimeSeries`package, so you don't need to add it on your own to get native support for the `TimeSeries` format.
 
 ```@example
+    using Lucky
+    using MarketData
+    using Rocket
     symbol = :AAPL
 
     # Define the historical period you wish to retrieve.
@@ -85,6 +88,7 @@ Add Standard `Random` Libray to your `Project.toml`file.
 
 ```@example
 using Lucky
+using Rocket
 using Random
 using Dates
 

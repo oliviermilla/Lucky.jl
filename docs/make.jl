@@ -35,8 +35,8 @@ makedocs(
             "Currencies" => "units/currencies.md"
         ],
         "Integrations" => [
-            "About" => "integrations.md",
-            "IBKR" => "integrations/ibkr.md"
+            "About" => "integrations.md"
+            #"IBKR" => "integrations/ibkr.md"
         ],
         "Glossary" => "glossary.md"
     ]

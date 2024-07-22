@@ -4,6 +4,7 @@ using Lucky
 
 import Rocket
 import TimeSeries
+using Dates
 
 Lucky.Ohlc(data::TimeSeries.TimeArray, index::Int) = Ohlc(
     TimeSeries.values(data[index][:Open])[1],
@@ -24,7 +25,7 @@ end
 Rocket.from(data::TimeSeries.TimeArray) = Rocket.from(Vector{Ohlc}(data))
 
 function Lucky.quotes(instr::Instrument, data::TimeSeries.TimeArray)
-    instrType = InstrumenType(instr)
+    instrType = InstrumentType(instr)
     rightType = QuoteType(instrType, Ohlc{Date})
     return Rocket.from(data) |> map(rightType, ohlc -> Quote(instr, ohlc))
 end

@@ -2,7 +2,6 @@ export blotter
 
 function blotter end
 
-blotter(x::Any) = error("You probably forgot to implement blotter($(x))")
-@inline blotter(s::Symbol) = blotter(Val(s))
+@inline blotter(s::Symbol, params...) = blotter(Val(s), params...)
 
 abstract type AbstractBlotter <: Actor{Any} end
