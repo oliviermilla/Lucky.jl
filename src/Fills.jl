@@ -2,10 +2,20 @@ export AbstractFill
 export Fill
 export FillType
 
+"""
+    AbstractFill
+
+Abstract Type for Fills.
+"""
 abstract type AbstractFill end
 
 FillType(::F) where {F<:AbstractFill} = F
 
+"""
+    AbstractFill
+
+Standard fill.
+"""
 struct Fill{O,S,D} <: AbstractFill
     id::String
     order::O

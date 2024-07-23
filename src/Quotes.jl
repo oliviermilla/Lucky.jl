@@ -1,4 +1,4 @@
-export AbstractQuote, Quote
+export AbstractQuote, Quote, PriceQuote, OhlcQuote
 export QuoteType
 export quotes
 """
