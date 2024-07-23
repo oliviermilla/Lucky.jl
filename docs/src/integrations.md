@@ -41,6 +41,7 @@ Add [InteractiveBrokers](https://github.com/oliviermilla/InteractiveBrokers.jl) 
 
 ```@example
     using Lucky
+    using Rocket
     using InteractiveBrokers
     client = service(:interactivebrokers) # Client holding the connection and settings.
     
@@ -49,6 +50,9 @@ Add [InteractiveBrokers](https://github.com/oliviermilla/InteractiveBrokers.jl) 
     stock = Stock(:AAPL, :USD)
 
     qt = trades(client, stock) # Will return a Subject that will stream the trades.
+    subscribe!(qt, logger())
+    # connect(client) # Will start the streams. Requires an alive IBGateway/Workstation.
+    nothing # hide
 ```    
 
 ## MarketData
@@ -62,13 +66,16 @@ Add [MarketData](https://github.com/JuliaQuant/MarketData.jl) to your `Project.t
     symbol = :AAPL
 
     # Define the historical period you wish to retrieve.
-    today = Dates.now(Dates.UTC)
-    periodEnd = Dates.firstdayofweek(today)
-    periodStart = Dates.lastdayofweek(today - Month(3))
-    opts = MarketData.YahooOpt(period1=periodStart, period2=periodEnd, interval="1d")
+    # today = Dates.now(Dates.UTC)
+    # periodEnd = Dates.firstdayofweek(today)
+    # periodStart = Dates.lastdayofweek(today - Month(1))
+    # opts = MarketData.YahooOpt(period1=periodStart, period2=periodEnd, interval="1d")
 
     # Get the data
-    data = MarketData.yahoo(symbol, opts)
+    # data = MarketData.yahoo(symbol, opts)
+
+    # Or use the static dataset provided by the package (here only last 4 elements)
+    data = getfield(MarketData, symbol)[end-3:end]
 
     # Create the Instrument
     stock = Stock(symbol, :USD)
@@ -76,10 +83,11 @@ Add [MarketData](https://github.com/JuliaQuant/MarketData.jl) to your `Project.t
     # Now you have a couple of options
 
     # Stream the raw data
-    Rocket.from(data)
+    subscribe!(Rocket.from(data), logger())
 
     # Stream the data as quotes
-    quotes(stock, data)
+    subscribe!(quotes(stock, data), logger())
+    nothing # hide
 ```
 
 ## Random	
@@ -94,10 +102,11 @@ using Dates
 
 # Generate random Ohlc of 5 minutes interval.
 period = Minute(5)
-ohlcs = rand(Ohlc{DateTime}, period, 10)
+ohlcs = rand(Ohlc{DateTime}, period, 4)
 
 # Stream the Ohlcs
-Rocket.from(ohlcs)
+subscribe!(Rocket.from(ohlcs), logger())
+nothing # hide
 ```
 
 ## TimeSeries
