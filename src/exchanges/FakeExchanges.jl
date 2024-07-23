@@ -44,8 +44,4 @@ function Rocket.on_next!(exchange::FakeExchange, qte::AbstractQuote)
     isnothing(tonext) || foreach(x -> next!(exchange.next, x), tonext)
 end
 
-@inline fillPriceQuote(ord, qte) = Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
-
-fillUUID() = string(uuid5(uuid4(), "FakeExchange"))
-
-fee(ord::AbstractOrder, price::Number) = zero(price)
+fee(::AbstractOrder, price::Number) = zero(price)

@@ -25,3 +25,7 @@ function match(ord::LimitOrder, qte::OhlcQuote)
     ord.limit >= qte.ohlc.low && ord.limit <= qte.ohlc.high && return Fill(fillUUID(), ord, ord.limit, ord.size, fee(ord, ord.limit), timestamp(qte))
     return nothing
 end
+
+@inline fillPriceQuote(ord, qte) = Fill(fillUUID(), ord, qte.price, ord.size, fee(ord, qte.price), timestamp(qte))
+
+fillUUID() = string(uuid5(uuid4(), "FakeExchange"))
