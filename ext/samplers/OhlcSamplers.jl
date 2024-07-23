@@ -19,11 +19,15 @@ function Random.rand(rng::Random.AbstractRNG, ::Type{Ohlc{Date}})
 end
 
 function Random.rand(rng::AbstractRNG, previous::Ohlc{T}, period::Dates.Period) where {T}
+    open = previous.close + rand(rng, -2.00:0.01:2.00)
+    high = open + rand(rng, 0.00:0.01:2.00)
+    low  = open + rand(rng, -2.00:0.01:0.00)
+    maxrng = high - low
     return Ohlc{T}(
-        previous.open + rand(rng, -2.00:0.01:2.00),
-        previous.high + rand(rng, -2.00:0.01:2.00),
-        previous.low + rand(rng, -2.00:0.01:2.00),
-        previous.close + rand(rng, -2.00:0.01:2.00),
+        open,
+        high,
+        low,
+        open + rand(rng, -maxrng:0.01:maxrng), # close
         previous.timestamp + period
     )
 end
