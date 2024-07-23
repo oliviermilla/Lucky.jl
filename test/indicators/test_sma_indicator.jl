@@ -18,7 +18,7 @@
         indic = indicType(missing)
         @test indic isa SMAIndicator{5,Union{Missing,quoteType},quoteType}
         @test indic.value === missing
-        @test Lucky.Indicators.period(indic) == 5
+        @test Lucky.period(indic) == 5
     end
     @testset "Operators" begin
         ind = SMAIndicator(3, 57.4)

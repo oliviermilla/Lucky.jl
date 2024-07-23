@@ -1,9 +1,6 @@
-module Indicators
-
-export AbstractIndicator, IterableIndicator, PeriodicValueIndicator, ValueIndicator, IndicatorType
+export AbstractIndicator, IterableIndicator, PeriodicValueIndicator, ValueIndicator
 export period, value
-
-using Lucky.Quotes
+export IndicatorType
 
 abstract type AbstractIndicator end
 
@@ -15,6 +12,7 @@ IndicatorType(::I) where {I<:AbstractIndicator} = I
 Base.:+(x::I, y::I) where {I<:AbstractIndicator} = I(x.value + y.value)
 Base.:-(x::I, y::I) where {I<:AbstractIndicator} = I(x.value - y.value)
 Base.isless(x::I, y::I) where {I<:AbstractIndicator} = isless(x.value, y.value)
+Base.show(io::IO, i::AbstractIndicator) = show(io, value(i))
 
 abstract type ValueIndicator{V} <: AbstractIndicator end
 Base.isless(x::ValueIndicator{V1}, y::ValueIndicator{V2}) where {V1,V2} = isless(x.value, y.value)
@@ -45,5 +43,3 @@ include("indicators/EMAIndicators.jl")
 include("indicators/HighWaterMarkIndicators.jl")
 include("indicators/RollingIndicators.jl")
 include("indicators/SMAIndicators.jl")
-
-end

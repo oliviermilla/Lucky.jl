@@ -1,13 +1,4 @@
-module InMemoryBlotters
-
 export InMemoryBlotter
-
-using Lucky.Blotters
-using Lucky.Fills
-using Lucky.Instruments
-using Lucky.Positions
-
-using Rocket
 
 struct InMemoryBlotter <: AbstractBlotter
     fills::Dict{Type{<:Instrument}, Vector{Fill}} # TODO Optimize
@@ -30,5 +21,3 @@ end
 
 Rocket.on_error!(actor::InMemoryBlotter, error) = error!(actor.next, error)
 Rocket.on_complete!(actor::InMemoryBlotter) = complete!(actor.next)
-
-end

@@ -1,12 +1,14 @@
-module Trades
-
 export AbstractTrade
 export Trade
 
-using Lucky.Fills
-using Lucky.Instruments
-import Lucky.Units as Units
+"""
+    AbstractTrade
 
+Abstract Trade type.
+
+A Trade is an actual exchange of a given Instrument.
+
+"""
 abstract type AbstractTrade <: AbstractFill end
 
 struct Trade{I,S,D} <: AbstractTrade
@@ -16,8 +18,11 @@ struct Trade{I,S,D} <: AbstractTrade
     timestamp::D
 end
 
+struct OhlcTrade{I,Q} <: AbstractTrade
+    instrument::I
+    ohlc::Q
+end
+
 Trade(instrument::Instrument, price::Float64, size::Number) = Trade(instrument, price, size, missing)
 
-Units.currency(t::Trade{I,S,D}) where {I<:Instrument,S,D} = Units.currency(t.instrument)
-
-end
+currency(t::Trade{I,S,D}) where {I<:Instrument,S,D} = currency(t.instrument)

@@ -1,6 +1,11 @@
 [deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+InteractiveBrokers = "f310f2d2-a263-11e8-3998-47bd686f18f7"
 Lucky = "091b6c57-2055-4743-a613-81d9bc5174d5"
+MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
 
 [compat]
 julia = "1.9"

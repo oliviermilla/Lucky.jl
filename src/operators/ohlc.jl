@@ -1,9 +1,5 @@
 export ohlc
 
-using Lucky.Ohlcs
-
-using Dates
-
 # Operator
 ohlc(period::Dates.Period, cutoff::Bool=true, seedTime::Union{Nothing,DateTime}=nothing, seedPrice::Union{Nothing,DateTime}=nothing) = OhlcOperatorFromTrade(seedTime, seedTime, period, seedPrice, seedPrice, seedPrice, seedPrice, cutoff, false)
 

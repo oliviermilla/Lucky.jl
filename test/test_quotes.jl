@@ -10,13 +10,13 @@
         stamp = Date(2021, 1, 1)
         q1 = Quote(stock, price, stamp)
         @testset "Constructors" begin
-            @test q1 isa Lucky.Quotes.PriceQuote
+            @test q1 isa Lucky.PriceQuote
             @test q1.instrument == stock
             @test q1.price == price
         end
         @testset "Interfaces" begin
-            QuoteType(stock, Float64, Date) === Lucky.Quotes.PriceQuote{InstrumentType(stock),Float64,Date}
-            QuoteType(stock) === Lucky.Quotes.PriceQuote{InstrumentType(stock),Float64,DateTime}
+            QuoteType(stock, Float64, Date) === Lucky.PriceQuote{InstrumentType(stock),Float64,Date}
+            QuoteType(stock) === Lucky.PriceQuote{InstrumentType(stock),Float64,DateTime}
             currency(q1) == Currency{:USD}
             timestamp(q1) == timestamp
         end
@@ -50,12 +50,12 @@
         ohlc1 = rand(Ohlc{Date})
         q1 = Quote(stock, ohlc1)
         @testset "Constructors" begin
-            @test q1 isa Lucky.Quotes.OhlcQuote
+            @test q1 isa Lucky.OhlcQuote
             @test q1.instrument == stock
             @test q1.ohlc == ohlc1
         end
         @testset "Interface" begin
-            QuoteType(stock, Ohlc{Date}) === Lucky.Quotes.PriceQuote{InstrumentType(stock),Ohlc{Date}}
+            QuoteType(stock, Ohlc{Date}) === Lucky.PriceQuote{InstrumentType(stock),Ohlc{Date}}
             currency(q1) == Currency{:USD}
             timestamp(q1) == ohlc1.timestamp
         end

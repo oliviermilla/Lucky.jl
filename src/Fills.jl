@@ -1,17 +1,21 @@
-module Fills
-
-export AbstractFill, FillType
+export AbstractFill
 export Fill
+export FillType
 
-using Lucky.Orders
-import Lucky.Units as Units
+"""
+    AbstractFill
 
-using Dates
-
+Abstract Type for Fills.
+"""
 abstract type AbstractFill end
 
 FillType(::F) where {F<:AbstractFill} = F
 
+"""
+    AbstractFill
+
+Standard fill.
+"""
 struct Fill{O,S,D} <: AbstractFill
     id::String
     order::O
@@ -21,6 +25,4 @@ struct Fill{O,S,D} <: AbstractFill
     timestamp::D
 end
 
-Units.currency(::Fill{O,S,D}) where {O<:AbstractOrder,S,D} = Units.currency(O)
-
-end
+currency(::Fill{O,S,D}) where {O<:AbstractOrder,S,D} = currency(O)

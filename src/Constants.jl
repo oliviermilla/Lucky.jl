@@ -1,7 +1,4 @@
-module Constants
+export DIRECTION
+export up, down, flat
 
-export ORDER_SIDE
-
-@enum ORDER_SIDE BUY_SIDE=1 SELL_SIDE=-1
-
-end
+@enum DIRECTION up=1 down=-1 flat=0

@@ -16,13 +16,16 @@ with_logger(debugLogger) do
     # Same order as in Lucky.jl
 
     include("test_units.jl")
-    include("test_utils.jl")
     include("test_currencies.jl")
+    
     include("test_instruments.jl")
+    include("instruments/test_cash.jl")
+    include("instruments/test_stocks.jl")
+    
     include("test_quotes.jl")
     include("test_positions.jl")
     include("test_orders.jl")
-    include("test_fills.jl")
+    include("test_fills.jl")    
     include("test_indicators.jl")
 
     include("test_ohlcs.jl")
@@ -33,11 +36,12 @@ with_logger(debugLogger) do
     include("operators/test_highwatermark_operator.jl")
     include("operators/test_drawdown_operator.jl")
 
-    include("exchanges/test_fake_exchanges.jl")
+    include("test_orderbooks.jl")
     include("blotters/test_in_memory_blotters.jl")
+    include("exchanges/test_fake_exchanges.jl")    
 
     # Extensions
-    include("ext/test_timeseries.jl")
+    include("ext/test_timeseries_ext.jl")
     include("ext/test_dydxv3_ohlc_operators.jl")
     include("ext/test_interactivebrokers_ext.jl")
     # include("ext/test_interactivebrokers_ext_live.jl")

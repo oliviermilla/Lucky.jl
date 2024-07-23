@@ -1,9 +1,3 @@
-module Feeders
+export trades
 
-export feed
-
-function feed end
-
-feed(x::Any) = error("You probably forgot to implement feed($(x))")
-
-end
+function trades end

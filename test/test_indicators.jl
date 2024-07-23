@@ -19,7 +19,7 @@
         @test d.value == 3.5 - 5.5
 
         # value()
-        @test Lucky.Indicators.value(a) == 3.5
+        @test Lucky.value(a) == 3.5
     end
     include("indicators/test_ema_indicator.jl")
     include("indicators/test_rolling_indicator.jl")

@@ -8,12 +8,22 @@ function error(ib::InteractiveBrokersObservable, err::InteractiveBrokers.IbkrErr
     #Rocket.error!(ib, err)
 end
 
+@inline function dispatch(func::Function, ib::InteractiveBrokersObservable, reqId::Int, fn::Symbol, field::Any)
+    key = CallbackKey(reqId, fn, field)
+    if haskey(ib.requestMappings, key)
+        val = ib.requestMappings[key]
+        data = func(val)
+        next!(val.subject, data)
+    end
+end
+
 function managedAccounts(ib::InteractiveBrokersObservable, accountsList::String)
     @debug "managedAccounts" accountsList
-    accounts = split(accountsList, ",")
-    filter!(x -> !isempty(x), accounts)
-    # TODO Dispatch
-    #println("Accounts: $(accounts)")
+
+    dispatch(ib, :managedAccounts, nothing) do val
+        accounts = split(accountsList, ",")
+        filter!(x -> !isempty(x), accounts)        
+    end    
 end
 
 function marketDataType(ib::InteractiveBrokersObservable, reqId::Int, marketDataType::InteractiveBrokers.MarketDataType)
@@ -28,11 +38,8 @@ function tickPrice(ib::InteractiveBrokersObservable, tickerId::Int, field::Inter
     @debug "tickPrice" tickerId field price size attrib
     # ex data: 1 DELAYED_BID -1.0
     # TODO use attrib
-    key = CallbackKey(tickerId, :tickPrice, field)
-    if haskey(ib.requestMappings, key)
-        val = ib.requestMappings[key]
-        qte = Lucky.Trade(val.instrument, price, size)
-        next!(val.subject, qte)
+    dispatch(ib, tickerId, field) do val
+        Lucky.Trade(val.instrument, price, size)
     end
 end
 
@@ -43,20 +50,16 @@ end
 function tickSize(ib::InteractiveBrokersObservable, tickerId::Int, field::InteractiveBrokers.TickTypes.TICK_TYPES, size::Float64)
     @debug "tickSize" tickerId field size
     # ex data: 1 DELAYED_VOLUME 0.0
-    key = CallbackKey(tickerId, :tickSize, field)
-    if haskey(ib.requestMappings, key)
-        val = ib.requestMappings[key]
-        next!(val.subject, size)
+    dispatch(ib, tickerId, field) do val
+        size
     end
 end
 
 function tickString(ib::InteractiveBrokersObservable, tickerId::Int, field::InteractiveBrokers.TickTypes.TICK_TYPES, value::String)
     @debug tickString tickerId field value
     # ex data: 1 DELAYED_LAST_TIMESTAMP 1718409598
-    key = CallbackKey(tickerId, :tickString, field)
-    if haskey(ib.requestMappings, key)
-        val = ib.requestMappings[key]
+    dispatch(ib) do val
         # TODO Handle timezones
-        next!(val.subject, unix2datetime(parse(Int64, value)))
+        unix2datetime(parse(Int64, value))
     end
 end
