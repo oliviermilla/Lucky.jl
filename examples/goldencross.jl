@@ -135,13 +135,13 @@ import MarketData # Import to avoid conflicting names such as timestamp()
 
     # Create an 'exchange' block (replace with a true exchange in prod)
     # and subscribe to the feeds it needs
-    exchange = FakeExchange(fills)
+    exchange = Lucky.exchange(:fake, fills)
     subscribe!(quotes, exchange)
     subscribe!(orders, exchange)
 
     # Create a 'blotter' block that will reside in memory
     # Subscribe to the feeds it needs (Fills)
-    blotter = InMemoryBlotter(positions)
+    blotter = Lucky.blotter(:inmemory, positions)
     subscribe!(fills, blotter)
 
     # Print to the feed

@@ -12,7 +12,7 @@ debugLogger = Base.global_logger() # Debug info disabled
 with_logger(debugLogger) do
 
     # Uncomment if you want to run examples
-    include("../examples/goldencross.jl")
+    # include("../examples/goldencross.jl")
 
     # Same order as in Lucky.jl
 
