@@ -20,7 +20,9 @@ with_logger(debugLogger) do
     include("test_currencies.jl")
     
     include("test_instruments.jl")
+    include("instruments/test_bonds.jl")
     include("instruments/test_cash.jl")
+    include("instruments/test_futures.jl")
     include("instruments/test_stocks.jl")
     
     include("test_quotes.jl")

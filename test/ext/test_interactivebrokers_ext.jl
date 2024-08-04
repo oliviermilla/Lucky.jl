@@ -32,10 +32,20 @@ using InteractiveBrokers
             # TODO Test all other contract types (Cash, Bond, Fut, etc.)
         end
         @testset "Lucky.Instrument" begin
-            future = InteractiveBrokers.Contract(691439932, "M6E", "FUT", "20240916", 0.0, "", "12500", "", "", "USD", "M6EU4", "M6E", false, "", "", "", "", "", "", InteractiveBrokers.ComboLeg[], nothing)
-            bond = InteractiveBrokers.Contract(573330472, "US-T", "BOND", "20250715", 0.0, "", "", "", "", "USD", "IBCID573330472", "US-T", false, "", "", "", "", "", "", InteractiveBrokers.ComboLeg[], nothing)
+            futureC = InteractiveBrokers.Contract(691439932, "M6E", "FUT", "20240916", 0.0, "", "12500", "", "", "USD", "M6EU4", "M6E", false, "", "", "", "", "", "", InteractiveBrokers.ComboLeg[], nothing)
+            bondC = InteractiveBrokers.Contract(573330472, "US-T", "BOND", "20250715", 0.0, "", "", "", "", "USD", "IBCID573330472", "US-T", false, "", "", "", "", "", "", InteractiveBrokers.ComboLeg[], nothing)
 
-            # TODO test Lucky.Instrument() for each instrument
+            futureI = Lucky.Instrument(futureC)
+            bondI = Lucky.Instrument(bondC)
+
+            @test futureI isa Future
+            @test bondI isa Bond
+
+            @test currency(futureI) == CurrencyType("USD")
+            @test currency(bondI) == CurrencyType("USD")
+
+            @test futureI.expiration == Date("2024-09-16")
+            @test bondI.maturity == Date("2025-07-15")
         end
     end
 end
