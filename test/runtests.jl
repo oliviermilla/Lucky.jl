@@ -7,7 +7,8 @@ using Dates
 using Random
 
 using Logging
-debugLogger = Base.global_logger() # Replace to enable debug output ConsoleLogger(stderr, Logging.Debug)
+debugLogger = Base.global_logger() # Debug info disabled
+# debugLogger = ConsoleLogger(stderr, Logging.Debug) # Debug info enabled
 with_logger(debugLogger) do
 
     # Uncomment if you want to run examples
@@ -19,7 +20,9 @@ with_logger(debugLogger) do
     include("test_currencies.jl")
     
     include("test_instruments.jl")
+    include("instruments/test_bonds.jl")
     include("instruments/test_cash.jl")
+    include("instruments/test_futures.jl")
     include("instruments/test_stocks.jl")
     
     include("test_quotes.jl")

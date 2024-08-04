@@ -3,7 +3,7 @@ export Stock
 """
     Stock
 
-Instrument representing Stock.
+Instrument representing a Stock.
 """
 struct Stock{S,C} <: Instrument end
 
