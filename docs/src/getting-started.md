@@ -1,7 +1,5 @@
 # Getting started
 
-Lucky.jl
-
 ## Installation
 
 Install Lucky.jl through the Julia package manager:
@@ -10,9 +8,9 @@ Install Lucky.jl through the Julia package manager:
 ] add Lucky
 ```
 
-The package has very light dependencies other than its reactive async core: Rocket.jl.
+The package has very little dependencies other than Rocket.jl.
 
-Seamless integration with other packages (DataFrames, TimeSeries, Broker APIS, etc.), is done via extensions.
+Integration with other packages (DataFrames, TimeSeries, Broker APIS, etc.) is done through extensions. You'll have to add the packages you need to trigger the integrations:
 
 ```Julia
 # Natively import historical stock price from Yahoo into Lucky.
@@ -21,35 +19,53 @@ Seamless integration with other packages (DataFrames, TimeSeries, Broker APIS, e
 
 ## Concepts
 
-A basic trading pipeline looks like this:
+Conceptually, a Lucky trading pipeline looks like this:
 
-![](./assets/lucky.svg)
+![](./assets/lucky.drawio.svg)
 
-This is purely conceptual as brokers (such as Alpaca or Interactive Brokers for instance) most likely act as exchanges (where orders get matched) and blotters (where your positions are stored).
-
-More interestingly, Lucky allows you to do these wiring in any way you'd like with as many steps as you'd like and different time frames all at once.
-
-As a picture, consider that you'd like to have 3 strategies, with each being dedicated to adjusting the final decision to manage orders. 
-
-1. Strategy one provides risk signals.
-2. Next Strategy manages allocation targets. 
-3. Final Strategy handles order execution.
-
-Which means that such a design requires lots of wiring as strategy 2 needs to know your current position, while 3 will likey need to track the fills and positions.
-
-Whatever you wish to build, the concepts remain where:
+where
 
 - **Operators** transform data.
 - **Strategies** make decisions.
 - **Exchanges** match orders.
 - **Blotters** do the record keeping.
 
-To do all this, Lucky leverages the Rocket library under the hood, allowing fast reactive processing.
+This is purely conceptual. For instance, brokers such as Alpaca or Interactive Brokers both act as exchanges and blotters. 
 
-Familiarity with reactive programming concepts helps (though not required).
-You can refer to Rocket's documentation for more information [here](https://reactivebayes.github.io/Rocket.jl/stable/).
+More interestingly, Lucky allows you to do these wiring in any way you'd like:
+- Parallel steps (ex: different strategies running in parallel)
+- Intermediary steps (ex: one strategy that takes as input the decisions of other strategies).
+- Feeback loops (ex: one strategy that requires to know the state of a blotter).
 
-That's all we need to know for now.
+In addition, 
+- Messaging between blocks can be synchronous or asynchronous.
+- Messaging is reactive, meaning that chains will be trigger only upon new incoming data.
+
+Familiarity with reactive programming concepts helps but is not required.
+You can refer to Rocket's documentation [here](https://reactivebayes.github.io/Rocket.jl/stable/). 
+
+It provides 
+- a crash course in reactive programming.
+- documentation for key concepts upon which Lucky is built.
+- documentation for dozens of operators that you can leverage in Lucky.
+
+The rest of Lucky's documentation describes:
+- The **Data Types** of objects transiting through these blocks.
+- Common **Operators** that are provided with Lucky.
+- The interfaces of key objects :
+    - **Strategies**
+    - **Exchanges**
+    - **Blotters**
+
+All conceps presented here derive from abstract types to allow easy integration of more specialized types.
+
+Finally, the "Integrations" section will present the currently implemented integrations.
+
+Enjoy.
+
+# First example
+
+See the `src/examples` folder for a first commented example and its jupyter version.
 
 
 
