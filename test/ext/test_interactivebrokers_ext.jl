@@ -20,6 +20,12 @@ using InteractiveBrokers
             # @test getproperty(wrap, :nextValidId) isa Function
 
         end
+        @testset "positions()" begin
+            client = Lucky.service(:interactivebrokers)            
+
+            ps = Lucky.positions(client)
+            @test Rocket.as_subscribable(ps) isa SimpleSubscribableTrait # or ScheduledSubscribableTrait                        
+        end
         @testset "InteractiveBrokers.Contract" begin
             stock = Stock(:AAPL, :USD)
             # TODO Requires a definition for == in InteractiveBrokers
