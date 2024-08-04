@@ -19,7 +19,7 @@ makedocs(
                 "About" => "instruments/instruments.md",
                 "Bonds" => "instruments/bonds.md",
                 "Cash" => "instruments/cash.md",
-                "Future" => "instruments/futures.md",
+                "Futures" => "instruments/futures.md",
                 "Stocks" => "instruments/stocks.md"
             ],
             "Ohlc" => "ohlcs.md",
