@@ -93,7 +93,7 @@ Current methods are:
     Lucky.timestamp
 ```
 
-In addition, all Lucky objects have type methods that allow you to know beforehand the types that you should expect. These methods share a naming conventio: they all finish by Type.
+In addition, all Lucky objects have type methods that allow you to know beforehand the types that you should expect. These methods share a naming convention: they all finish with `Type`.
 
 ```@example
     using Lucky
