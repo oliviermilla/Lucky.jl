@@ -28,3 +28,8 @@ function InteractiveBrokers.reqMarketDataType(ib::InteractiveBrokersObservable, 
     f = (connection) -> InteractiveBrokers.reqMarketDataType(connection, t)
     delayedReq(f, ib)
 end
+
+function InteractiveBrokers.reqPositions(ib::InteractiveBrokersObservable)
+    f = (connection) -> InteractiveBrokers.reqPositions(connection)
+    delayedReq(f, ib)
+end

@@ -5,23 +5,36 @@ using Lucky
 using Rocket
 using Dates
 
-struct CallbackKey
+struct CallbackTradesKey
     requestId::Int
     callbackSymbol::Symbol
     tickType::InteractiveBrokers.TickTypes.TICK_TYPES
 end
 
-struct CallbackValue
+struct CallbackTradesValue
     callbackFunction::Function
     subject::Rocket.Subject
     instrument::Lucky.Instrument
 end
 
-const CallbackMapping = Dict{CallbackKey,CallbackValue}
+const CallbackTradesMapping = Dict{CallbackTradesKey,CallbackTradesValue}
 
-mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
-    requestMappings::CallbackMapping
+struct CallbackPositionsKey
+    callbackSymbol::Symbol
+end
+
+struct CallbackPositionsValue
+    callbackFunction::Function
+    subject::Rocket.Subject
+end
+
+const CallbackPositionsMapping = Dict{CallbackPositionsKey,CallbackPositionsValue}
+
+mutable struct InteractiveBrokersObservable <: Subscribable{Any}
+    requestTradesMappings::CallbackTradesMapping
     mergedCallbacks::Dict{Symbol,Rocket.Subscribable}
+
+    requestPositionsMappings::CallbackPositionsMapping
 
     nextValidId::Union{Missing,Int}
 
@@ -41,9 +54,10 @@ mutable struct InteractiveBrokersObservable <: Subscribable{Nothing}
 
     function InteractiveBrokersObservable(host=nothing, port::Union{Nothing,Int}=nothing, clientId::Union{Nothing,Int}=nothing, connectOptions::Union{Nothing,String}=nothing, optionalCapabilities::Union{Nothing,String}=nothing)
         ib = new(
-            CallbackMapping(),
+            CallbackTradesMapping(),
             Dict{Symbol,Rocket.Subscribable}(),
-            missing,
+            CallbackPositionsMapping(),
+            missing, # nextValidId
             host,
             port,
             clientId,
@@ -95,6 +109,15 @@ end
 include("InteractiveBrokers/Requests.jl")
 include("InteractiveBrokers/Callbacks.jl")
 
+"""
+    service(::Val{:interactivebrokers}; host=nothing, port::Int=4001, clientId::Int=1, connectOptions::String="", optionalCapabilities::String="")
+
+returns an InteractiveBrokersObservable which holds the client connection, settings and mappings.
+
+Calling `service` will not start the connection right away. You need to call `connect` on it first.
+Neverthless, all information request that will occur before the connection is established wiil be cached and sent upon connection.
+This allows you to setup all your requirements before calling `connect`.
+"""
 function Lucky.service(::Val{:interactivebrokers}; host=nothing, port::Int=4001, clientId::Int=1, connectOptions::String="", optionalCapabilities::String="")
     return InteractiveBrokersObservable(host, port, clientId, connectOptions, optionalCapabilities)
 end
@@ -251,6 +274,16 @@ DELAYED_YIELD_ASK = 104
 # combine incoming prices, sizes & timestamps into a Trade structure
 feedMerge(tup::Tuple{Lucky.AbstractTrade,DateTime}) = Trade(tup[1].instrument, tup[1].price, tup[1].size, tup[2])
 
+"""
+    trades(client::InteractiveBrokersObservable, instr::Instrument)
+
+returns a Subject that will stream the instrument's trades.
+
+Under the hood, the extension will merge the data from the following IBKR callbacks:
+- tickPrice() with LAST or DELAYED_LAST
+- tickString() with LAST_TIMESTAMP or DELAYED_LAST_TIMESTAMP
+
+"""
 function Lucky.trades(client::InteractiveBrokersObservable, instr::Instrument)
     requestId = nextValidId(client)
 
@@ -261,27 +294,63 @@ function Lucky.trades(client::InteractiveBrokersObservable, instr::Instrument)
     # WARNING: DOCS STATE that tickSize returns the LAST_SIZE while it never does in practice. (12/07/2024)
     # Hence all the commented code.
     tickPriceSubject = Subject(Lucky.Trade)
-    #tickSizeSubject = Subject(Float64)
+    tickSizeSubject = Subject(Float64)
     tickStringSubject = Subject(DateTime)
 
-    client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackValue(tickPrice, tickPriceSubject, instr)
-    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    #client.requestMappings[CallbackKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackValue(tickSize, tickSizeSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
-    client.requestMappings[CallbackKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackValue(tickString, tickStringSubject, instr)
+    client.requestTradesMappings[CallbackTradesKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.LAST)] = CallbackTradesValue(tickPrice, tickPriceSubject, instr)
+    client.requestTradesMappings[CallbackTradesKey(requestId, :tickPrice, InteractiveBrokers.TickTypes.DELAYED_LAST)] = CallbackTradesValue(tickPrice, tickPriceSubject, instr)
+    client.requestTradesMappings[CallbackTradesKey(requestId, :tickSize, InteractiveBrokers.TickTypes.LAST_SIZE)] = CallbackTradesValue(tickSize, tickSizeSubject, instr)
+    client.requestTradesMappings[CallbackTradesKey(requestId, :tickSize, InteractiveBrokers.TickTypes.DELAYED_LAST_SIZE)] = CallbackTradesValue(tickSize, tickSizeSubject, instr)
+    client.requestTradesMappings[CallbackTradesKey(requestId, :tickString, InteractiveBrokers.TickTypes.LAST_TIMESTAMP)] = CallbackTradesValue(tickString, tickStringSubject, instr)
+    client.requestTradesMappings[CallbackTradesKey(requestId, :tickString, InteractiveBrokers.TickTypes.DELAYED_LAST_TIMESTAMP)] = CallbackTradesValue(tickString, tickStringSubject, instr)
 
     #merged = Rocket.combineLatest(tickPriceSubject, tickSizeSubject, tickStringSubject) |> Rocket.map(Lucky.Trade, feedMerge)
     merged = Rocket.combineLatest(tickPriceSubject, tickStringSubject) |> Rocket.map(Lucky.Trade, feedMerge)
-    
+
     # Output callback
     client.mergedCallbacks[:tick] = merged
 
-    # subscribe!(client.obs, tickPriceSubject)
-    # subscribe!(client.obs, tickStringSubject)
+    #subscribe!(client.obs, tickPriceSubject)
+    #subscribe!(client.obs, tickStringSubject)
 
     return merged
 end
+
+struct IbKrPosition{I<:Instrument} <: Lucky.AbstractPosition
+    account::String
+    instrument::I
+    size::Float64
+    avgCost::Float64
+    timestamp::DateTime
+end
+
+# struct IbkrBlotter <: AbstractBlotter
+#     next::Subject(IbKrPosition)
+# end
+
+# function Lucky.blotter(client::InteractiveBrokersObservable)
+#     InteractiveBrokers.reqPositions(client)
+
+#     posSubject = Subject(IbKrPosition)
+#     blotter = IbkrBlotter(posSubject)
+#     client.requestPositionsMappings[CallbackPositionsKey(:position)] = CallbackPositionsValue(position, posSubject)    
+
+#     #subscribe!(client.obs, posSubject)
+
+#     return blotter
+# end
+
+function Lucky.positions(client::InteractiveBrokersObservable)
+    InteractiveBrokers.reqPositions(client)
+
+    posSubject = Subject(IbKrPosition)
+    client.requestPositionsMappings[CallbackPositionsKey(:position)] = CallbackPositionsValue(position, posSubject)
+
+    #subscribe!(client.obs, posSubject)
+
+    return posSubject
+end
+
 
 function wrapper(client::InteractiveBrokersObservable)
     wrap = InteractiveBrokers.Wrapper(client)
@@ -292,24 +361,33 @@ function wrapper(client::InteractiveBrokersObservable)
     setproperty!(wrap, :managedAccounts, managedAccounts)
     setproperty!(wrap, :marketDataType, marketDataType)
     setproperty!(wrap, :nextValidId, nextValidId)
-    setproperty!(wrap, :tickReqParams, tickReqParams)
+    setproperty!(wrap, :positionEnd, positionEnd)
+    setproperty!(wrap, :tickReqParams, tickReqParams)    
 
-    for (key, val) in client.requestMappings
-        setproperty!(wrap, key.callbackSymbol, val.callbackFunction)
+    for mapping in [client.requestPositionsMappings, client.requestTradesMappings]
+        for (key, val) in mapping
+            setproperty!(wrap, key.callbackSymbol, val.callbackFunction)
+        end
     end
     return wrap
 end
 
 secType(::T) where {T<:Lucky.Instrument} = Base.error("You probably forgot to implement secType(::$(T))")
+secType(::T) where {T<:Lucky.Bond} = "BOND"
 secType(::T) where {T<:Lucky.Cash} = "CASH"
+secType(::T) where {T<:Lucky.Future} = "FUT"
 secType(::T) where {T<:Lucky.Stock} = "STK"
 
 symbol(::T) where {T<:Lucky.Instrument} = Base.error("You probably forgot to implement symbol(::$(T))")
+symbol(::T) where {S,C,T<:Lucky.Bond{S,C}} = String(S)
 symbol(::T) where {C,T<:Lucky.Cash{C}} = String(C)
+symbol(::T) where {S,C,T<:Lucky.Future{S,C}} = String(S)
 symbol(::T) where {S,C,T<:Lucky.Stock{S,C}} = String(S)
 
 exchange(::T) where {T<:Lucky.Instrument} = Base.error("You probably forgot to implement exchange(::$(T))")
+exchange(::T) where {S,C,T<:Lucky.Bond{S,C}} = ""
 exchange(::T) where {C,T<:Lucky.Cash{C}} = "IDEALPRO" # TODO: Support Virtual Forex
+exchange(::T) where {S,C,T<:Lucky.Future{S,C}} = ""
 exchange(::T) where {S,C,T<:Lucky.Stock{S,C}} = "SMART"
 
 function InteractiveBrokers.Contract(i::Lucky.Instrument)
@@ -317,8 +395,34 @@ function InteractiveBrokers.Contract(i::Lucky.Instrument)
         symbol=symbol(i),
         secType=secType(i),
         exchange=exchange(i),
-        currency=Lucky.Units.currency(i)
+        currency=Lucky.currency(i)
     )
+end
+
+const expDateFormat = dateformat"yyyymmdd"
+function Lucky.Instrument(contract::InteractiveBrokers.Contract)
+    @debug contract
+
+    if contract.secType == "STK"
+        # TODO
+    end
+
+    if contract.secType == "FUT"
+        return Future(
+            Symbol(contract.symbol), # Symbol
+            CurrencyType(contract.currency), # Currency
+            Date(contract.lastTradeDateOrContractMonth, expDateFormat) # Expiration
+        )
+    end
+
+    if contract.secType in ["BILL", "BOND"] # TODO Differentiate in Lucky probably
+        return Bond(
+            Symbol(contract.symbol), # Symbol
+            CurrencyType(contract.currency), # Currency
+            Date(contract.lastTradeDateOrContractMonth, expDateFormat) # Maturity
+        )
+    end
+    @error("Unimplemented Instrument constructor for InteractiveBrokers.Contract of secType $(contract.secType)")
 end
 
 end
