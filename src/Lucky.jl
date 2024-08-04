@@ -15,7 +15,9 @@ include("Ohlcs.jl")
 
 # ==== Instruments
 include("Instruments.jl")
+include("instruments/Bonds.jl")
 include("instruments/Cash.jl")
+include("instruments/Futures.jl")
 include("instruments/Stocks.jl")
 
 # ==== Other Data Types
