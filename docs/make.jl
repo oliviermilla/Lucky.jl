@@ -12,11 +12,11 @@ makedocs(
     pages=[
         "Getting Started" => "getting-started.md",
         "Data Types" => [
-            "About" => "datatypes.md",
+            "Data Types" => "datatypes.md",
             "Fills" => "fills.md",
             "Indicators" => "indicators.md",
             "Instruments" => [
-                "About" => "instruments/instruments.md",
+                "Instruments" => "instruments/instruments.md",
                 "Bonds" => "instruments/bonds.md",
                 "Cash" => "instruments/cash.md",
                 "Futures" => "instruments/futures.md",
@@ -29,15 +29,15 @@ makedocs(
             "Trades" => "trades.md",            
         ],
         "Operators" => [
-            "About" => "operators.md",
+            "Operators" => "operators.md",
             "rolling" => "operators/rolling.md"
         ],
         "Units" => [
-            "About" => "units/units.md",
+            "Units" => "units/units.md",
             "Currencies" => "units/currencies.md"
         ],
         "Integrations" => [
-            "About" => "integrations.md"
+            "Integrations" => "integrations.md"
             #"IBKR" => "integrations/ibkr.md"
         ],
         "Glossary" => "glossary.md"
