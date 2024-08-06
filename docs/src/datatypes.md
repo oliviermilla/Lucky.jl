@@ -68,21 +68,6 @@ Since we have different types, two different methods will get triggered dependin
 !!! info
     You could also have written a single `Rocket.on_next!(strat::MyStrategy, data::Any)` method and differentiate the type in the method. Though sometimes useful, the presented method is common.
 
-Lucky makes a lot of effort to preserve types along all steps and offers convenient methods to track types. For instance, let's say we want to use the `sma` operator on the first feed from the above examples:
-
-<!-- @example
-    using Lucky
-    using Rocket
-
-    struct Weight{F} <: ValueIndicator{F}
-        value::F
-    end
-
-    # Weight feed from the above example with a Simple Moving Average
-    Rocket.subscribe!(Rocket.from([1.1, 2.2, 3.3]) |> map(Weight, x -> Weight(x)) |> sma(2), logger())
-    nothing # hide
- -->
-
 ## Common Interfaces
 
 Many objects share methods that allow access to reference types or data.
@@ -93,14 +78,14 @@ Current methods are:
     Lucky.timestamp
 ```
 
-In addition, all Lucky objects have type methods that allow you to know beforehand the types that you should expect. These methods share a naming convention: they all finish with `Type`.
+### Type Interfaces
+
+In addition, Lucky objects have type methods that allow you to know beforehand the types that you should expect. These methods share a naming convention: they all finish with `Type`. It is leveraged to ensure type stability and you can use the interface to do so.
 
 ```@example
     using Lucky
 
-    struct Weight
-        value::Float64
-    end
+    value = 0.0
 
-    smaType = IndicatorType(SMAIndicator, 2, Weight)
+    smaType = IndicatorType(SMAIndicator, 2, typeof(value))
 ```
