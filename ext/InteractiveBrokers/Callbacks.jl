@@ -68,7 +68,7 @@ function tickPrice(ib::InteractiveBrokersObservable, tickerId::Int, field::Inter
     @debug "tickPrice" tickerId field price size attrib
     # ex data: 1 DELAYED_BID -1.0
     # TODO use attrib
-    dispatchTrades(ib, tickerId, :tickprice, field) do val
+    dispatchTrades(ib, tickerId, :tickPrice, field) do val
         Lucky.Trade(val.instrument, price, size)
     end
 end
