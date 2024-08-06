@@ -12,7 +12,7 @@ abstract type AbstractFill end
 FillType(::F) where {F<:AbstractFill} = F
 
 """
-    AbstractFill
+    Fill
 
 Standard fill.
 """
