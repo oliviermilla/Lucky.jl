@@ -26,12 +26,12 @@ TimeSeriesExt = "TimeSeries"
 
 [compat]
 DydxV3 = "0.7"
-InteractiveBrokers = "0.27"
+InteractiveBrokers = "0.28"
 MarketData = "0.14, 0.15"
 Rocket = "1.7.2"
 Statistics = "1"
 TimeSeries = "0.24"
-julia = "1.9"
+julia = "1.10"
 
 [extras]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
