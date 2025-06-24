@@ -26,7 +26,7 @@ TimeSeriesExt = "TimeSeries"
 
 [compat]
 DydxV3 = "0.7"
-InteractiveBrokers = "0.28, 0.30"
+InteractiveBrokers = "0.28, 0.30, 0.31"
 MarketData = "0.14, 0.15"
 Rocket = "1.7.2"
 Statistics = "1"
